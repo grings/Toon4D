@@ -145,6 +145,19 @@ begin
     Exit;
   end;
 
+  if KeyName.Equals('true') or KeyName.Equals('false') or KeyName.Equals('null') then
+  begin
+    Result := False;
+    Exit;
+  end;
+
+  var LooksLikeNumber := TRegEx.IsMatch(KeyName, '^-?\d+(\.\d+)?$');
+  if LooksLikeNumber then
+  begin
+    Result := False;
+    Exit;
+  end;
+
   var Pattern := '^[A-Za-z_][A-Za-z0-9_.]*$';
   Result := TRegEx.IsMatch(KeyName, Pattern);
 end;

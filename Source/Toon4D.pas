@@ -470,7 +470,8 @@ begin
 
   if JsonValue is TJSONArray then
   begin
-    raise EToonEncodingException.Create('Array encoding not implemented yet');
+    Result := EncodeArray(JsonValue as TJSONArray, ActualOptions, 0);
+    Exit;
   end;
 
   Result := EncodePrimitive(JsonValue, ActualOptions);
