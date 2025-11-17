@@ -77,7 +77,7 @@ begin
   if JsonValue is TJSONString then
   begin
     var StringValue := (JsonValue as TJSONString).Value;
-    var Delimiter := ',';
+    var Delimiter := GetDelimiter(Options);
     if NeedsQuoting(StringValue, Delimiter) then
       Result := '"' + EscapeString(StringValue) + '"'
     else
@@ -281,13 +281,15 @@ class function TToon.EncodeArray(JsonArray: TJSONArray; Options: TToonOptions; I
 begin
   var ArrayLength := JsonArray.Count;
   var Delimiter := GetDelimiter(Options);
-  var LengthPrefix := '[' + ArrayLength.ToString + ']';
+  var LengthPrefix := '[' + ArrayLength.ToString;
 
   if TToonOption.DelimiterTab in Options then
     LengthPrefix := LengthPrefix + Delimiter;
 
   if TToonOption.DelimiterPipe in Options then
     LengthPrefix := LengthPrefix + Delimiter;
+
+  LengthPrefix := LengthPrefix + ']';
 
   if ArrayLength = 0 then
   begin
