@@ -2,7 +2,7 @@
 {                                                       }
 {         Toon4D Library - LLM Data Optimization        }
 {                                                       }
-{     Copyright(c) 2025 [Organization/Author Name]      }
+{     Copyright(c) 2025 Marco Geuze - GDK Software      }
 {              All rights reserved                      }
 {                                                       }
 {              Licensed under MIT License               }
@@ -42,6 +42,10 @@ type
 
 implementation
 
+uses
+  Toon4D.Utils,
+  Toon4D.Consts;
+
 class function TToon.GetDefaultOptions: TToonOptions;
 begin
   Result := [
@@ -56,13 +60,46 @@ class function TToon.JsonToToon(
   JsonValue: TJSONValue;
   Options: TToonOptions
 ): string;
-var
-  ActualOptions: TToonOptions;
 begin
-  if Options = [] then
-    ActualOptions := GetDefaultOptions
-  else
-    ActualOptions := Options;
+  if JsonValue = nil then
+    raise EToonInvalidJsonException.Create(ErrorNilJsonValue);
+
+  var ActualOptions := Options;
+  if ActualOptions = [] then
+    ActualOptions := GetDefaultOptions;
+
+  if JsonValue is TJSONNumber then
+  begin
+    Result := NormalizeNumber(JsonValue as TJSONNumber);
+    Exit;
+  end;
+
+  if JsonValue is TJSONString then
+  begin
+    var StringValue := (JsonValue as TJSONString).Value;
+    var Delimiter := ',';
+
+    if NeedsQuoting(StringValue, Delimiter) then
+      Result := '"' + EscapeString(StringValue) + '"'
+    else
+      Result := StringValue;
+    Exit;
+  end;
+
+  if JsonValue is TJSONBool then
+  begin
+    if (JsonValue as TJSONBool).AsBoolean then
+      Result := 'true'
+    else
+      Result := 'false';
+    Exit;
+  end;
+
+  if JsonValue is TJSONNull then
+  begin
+    Result := 'null';
+    Exit;
+  end;
 
   raise EToonEncodingException.Create('Not implemented yet');
 end;
@@ -71,15 +108,16 @@ class function TToon.JsonToToon(
   const JsonString: string;
   Options: TToonOptions
 ): string;
-var
-  ActualOptions: TToonOptions;
 begin
-  if Options = [] then
-    ActualOptions := GetDefaultOptions
-  else
-    ActualOptions := Options;
+  var JsonValue := TJSONObject.ParseJSONValue(JsonString);
+  if JsonValue = nil then
+    raise EToonInvalidJsonException.CreateFmt(ErrorInvalidJson, [JsonString]);
 
-  raise EToonEncodingException.Create('Not implemented yet');
+  try
+    Result := JsonToToon(JsonValue, Options);
+  finally
+    JsonValue.Free;
+  end;
 end;
 
 class function TToon.Validate(

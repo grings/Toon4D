@@ -19,7 +19,9 @@ uses
   Toon4D.Tests.Nesting in 'Toon4D.Tests.Nesting.pas',
   Toon4D.Tests.KeyFolding in 'Toon4D.Tests.KeyFolding.pas',
   Toon4D.Tests.Delimiters in 'Toon4D.Tests.Delimiters.pas',
-  Toon4D.Tests.EdgeCases in 'Toon4D.Tests.EdgeCases.pas';
+  Toon4D.Tests.EdgeCases in 'Toon4D.Tests.EdgeCases.pas',
+  Toon4D.Tests.Integration in 'Toon4D.Tests.Integration.pas',
+  Toon4D.Tests.Conformance in 'Toon4D.Tests.Conformance.pas';
 
 {$IFNDEF TESTINSIGHT}
 var
@@ -49,11 +51,9 @@ begin
       System.ExitCode := EXIT_ERRORS;
 
     {$IFNDEF CI}
-    if TDUnitX.Options.ExitBehavior = TDUnitXExitBehavior.Pause then
-    begin
-      System.Write('Done.. press <Enter> key to quit.');
-      System.Readln;
-    end;
+    // Always pause when running from Delphi IDE
+    System.Write('Done.. press <Enter> key to quit.');
+    System.Readln;
     {$ENDIF}
   except
     on Exception do

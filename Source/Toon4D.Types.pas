@@ -2,7 +2,7 @@
 {                                                       }
 {         Toon4D Library - LLM Data Optimization        }
 {                                                       }
-{     Copyright(c) 2025 [Organization/Author Name]      }
+{     Copyright(c) 2025 Marco Geuze - GDK Software      }
 {              All rights reserved                      }
 {                                                       }
 {              Licensed under MIT License               }

@@ -20,46 +20,46 @@ type
   TDelimiterTests = class
   public
     [Test]
-    procedure DelimiterComma_InlineArray_ShouldUseComma;
+    procedure Comma_InlineArray_ShouldUseComma;
 
     [Test]
-    procedure DelimiterTab_InlineArray_ShouldUseTab;
+    procedure Tab_InlineArray_ShouldUseTab;
 
     [Test]
-    procedure DelimiterPipe_InlineArray_ShouldUsePipe;
+    procedure Pipe_InlineArray_ShouldUsePipe;
 
     [Test]
-    procedure DelimiterComma_TabularArray_ShouldUseComma;
+    procedure Comma_TabularArray_ShouldUseComma;
 
     [Test]
-    procedure DelimiterTab_TabularArray_ShouldUseTabInHeader;
+    procedure Tab_TabularArray_ShouldUseTabInHeader;
 
     [Test]
-    procedure DelimiterPipe_TabularArray_ShouldUsePipeInHeader;
+    procedure Pipe_TabularArray_ShouldUsePipeInHeader;
 
     [Test]
-    procedure DelimiterTab_TabularRows_ShouldSeparateWithTab;
+    procedure Tab_TabularRows_ShouldSeparateWithTab;
 
     [Test]
-    procedure DelimiterPipe_TabularRows_ShouldSeparateWithPipe;
+    procedure Pipe_TabularRows_ShouldSeparateWithPipe;
 
     [Test]
-    procedure DelimiterComma_StringWithComma_ShouldQuote;
+    procedure Comma_StringWithComma_ShouldQuote;
 
     [Test]
-    procedure DelimiterTab_StringWithTab_ShouldQuote;
+    procedure Tab_StringWithTab_ShouldQuote;
 
     [Test]
-    procedure DelimiterPipe_StringWithPipe_ShouldQuote;
+    procedure Pipe_StringWithPipe_ShouldQuote;
 
     [Test]
-    procedure DelimiterComma_Default_ShouldNotShowInHeader;
+    procedure Comma_Default_ShouldNotShowInHeader;
 
     [Test]
-    procedure DelimiterTab_ShouldShowInHeader;
+    procedure Tab_ShouldShowInHeader;
 
     [Test]
-    procedure DelimiterPipe_ShouldShowInHeader;
+    procedure Pipe_ShouldShowInHeader;
 
     [Test]
     procedure NestedArrays_CanHaveDifferentDelimiters;
@@ -71,7 +71,7 @@ uses
   Toon4D,
   Toon4D.Types;
 
-procedure TDelimiterTests.DelimiterComma_InlineArray_ShouldUseComma;
+procedure TDelimiterTests.Comma_InlineArray_ShouldUseComma;
 var
   JsonObject: TJSONObject;
   JsonArray: TJSONArray;
@@ -97,7 +97,7 @@ begin
   end;
 end;
 
-procedure TDelimiterTests.DelimiterTab_InlineArray_ShouldUseTab;
+procedure TDelimiterTests.Tab_InlineArray_ShouldUseTab;
 var
   JsonObject: TJSONObject;
   JsonArray: TJSONArray;
@@ -123,7 +123,7 @@ begin
   end;
 end;
 
-procedure TDelimiterTests.DelimiterPipe_InlineArray_ShouldUsePipe;
+procedure TDelimiterTests.Pipe_InlineArray_ShouldUsePipe;
 var
   JsonObject: TJSONObject;
   JsonArray: TJSONArray;
@@ -149,7 +149,7 @@ begin
   end;
 end;
 
-procedure TDelimiterTests.DelimiterComma_TabularArray_ShouldUseComma;
+procedure TDelimiterTests.Comma_TabularArray_ShouldUseComma;
 var
   JsonObject: TJSONObject;
   JsonArray: TJSONArray;
@@ -178,7 +178,7 @@ begin
   end;
 end;
 
-procedure TDelimiterTests.DelimiterTab_TabularArray_ShouldUseTabInHeader;
+procedure TDelimiterTests.Tab_TabularArray_ShouldUseTabInHeader;
 var
   JsonObject: TJSONObject;
   JsonArray: TJSONArray;
@@ -206,7 +206,7 @@ begin
   end;
 end;
 
-procedure TDelimiterTests.DelimiterPipe_TabularArray_ShouldUsePipeInHeader;
+procedure TDelimiterTests.Pipe_TabularArray_ShouldUsePipeInHeader;
 var
   JsonObject: TJSONObject;
   JsonArray: TJSONArray;
@@ -234,7 +234,7 @@ begin
   end;
 end;
 
-procedure TDelimiterTests.DelimiterTab_TabularRows_ShouldSeparateWithTab;
+procedure TDelimiterTests.Tab_TabularRows_ShouldSeparateWithTab;
 var
   JsonObject: TJSONObject;
   JsonArray: TJSONArray;
@@ -262,7 +262,7 @@ begin
   end;
 end;
 
-procedure TDelimiterTests.DelimiterPipe_TabularRows_ShouldSeparateWithPipe;
+procedure TDelimiterTests.Pipe_TabularRows_ShouldSeparateWithPipe;
 var
   JsonObject: TJSONObject;
   JsonArray: TJSONArray;
@@ -290,7 +290,7 @@ begin
   end;
 end;
 
-procedure TDelimiterTests.DelimiterComma_StringWithComma_ShouldQuote;
+procedure TDelimiterTests.Comma_StringWithComma_ShouldQuote;
 var
   JsonObject: TJSONObject;
   JsonArray: TJSONArray;
@@ -313,7 +313,7 @@ begin
   end;
 end;
 
-procedure TDelimiterTests.DelimiterTab_StringWithTab_ShouldQuote;
+procedure TDelimiterTests.Tab_StringWithTab_ShouldQuote;
 var
   JsonObject: TJSONObject;
   JsonArray: TJSONArray;
@@ -336,7 +336,7 @@ begin
   end;
 end;
 
-procedure TDelimiterTests.DelimiterPipe_StringWithPipe_ShouldQuote;
+procedure TDelimiterTests.Pipe_StringWithPipe_ShouldQuote;
 var
   JsonObject: TJSONObject;
   JsonArray: TJSONArray;
@@ -359,7 +359,7 @@ begin
   end;
 end;
 
-procedure TDelimiterTests.DelimiterComma_Default_ShouldNotShowInHeader;
+procedure TDelimiterTests.Comma_Default_ShouldNotShowInHeader;
 var
   JsonObject: TJSONObject;
   JsonArray: TJSONArray;
@@ -387,7 +387,7 @@ begin
   end;
 end;
 
-procedure TDelimiterTests.DelimiterTab_ShouldShowInHeader;
+procedure TDelimiterTests.Tab_ShouldShowInHeader;
 var
   JsonObject: TJSONObject;
   JsonArray: TJSONArray;
@@ -409,7 +409,7 @@ begin
   end;
 end;
 
-procedure TDelimiterTests.DelimiterPipe_ShouldShowInHeader;
+procedure TDelimiterTests.Pipe_ShouldShowInHeader;
 var
   JsonObject: TJSONObject;
   JsonArray: TJSONArray;
