@@ -99,7 +99,6 @@ type
   TToon = class sealed
   public
     const DefaultOptions: TToonOptions = [
-      TToonOption.KeyFoldingSafe,
       TToonOption.Indent2Spaces,
       TToonOption.DelimiterComma,
       TToonOption.PreferTabular
