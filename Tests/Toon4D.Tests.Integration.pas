@@ -414,7 +414,8 @@ begin
   ToonOutput := TToon.JsonToToon(JsonString);
 
   Assert.Contains(ToonOutput, 'metrics[3]{timestamp,cpu,memory}:');
-  Assert.Contains(ToonOutput, '2025-01-01T00:00:00Z,45.2,62.1');
+  // Timestamps contain ':' which is a special character, so they must be quoted per SPEC.md 4.1.4
+  Assert.Contains(ToonOutput, '"2025-01-01T00:00:00Z",45.2,62.1');
 end;
 
 procedure TIntegrationTests.GitHubRepositoryList_ShouldEncodeAsTabular;

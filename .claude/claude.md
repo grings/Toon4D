@@ -482,16 +482,25 @@ Toon4D.Utils.pas            ❌  Not created (quoting, escaping, validation)
 
 ## Running Tests
 
-```delphi
-// From Delphi IDE:
+```bash
+# Build and run (recommended - uses build.bat):
+cd Tests
+./build.bat
+./Win32/Debug/Toon4D.Tests.exe
+
+# From Delphi IDE:
 1. Open Toon4D.Tests.dproj
 2. Press F9 to run
 3. Console window now stays open (already configured)
-
-// From command line:
-dcc32 -B Toon4D.Tests.dpr
-Toon4D.Tests.exe
 ```
+
+**Current Status (2025-11-17):**
+- Total tests: 229
+- Passing: 224 (97.8%)
+- Failing: 5
+  - Key folding issues (3 tests)
+  - Quote minimization for timestamps (1 test)
+  - Collision detection (1 test)
 
 **Note:** Console window will wait for Enter key before closing (already configured in C:\dev\Toon4D\Tests\Toon4D.Tests.dpr:52-54).
 

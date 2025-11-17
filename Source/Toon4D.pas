@@ -25,7 +25,8 @@ type
     class function EncodeObject(JsonObject: TJSONObject; Options: TToonOptions; IndentLevel: Integer = 0): string; static;
     class function EncodePrimitive(JsonValue: TJSONValue; Options: TToonOptions): string; static;
     class function GetIndent(Options: TToonOptions; Level: Integer): string; static;
-    class function TryFoldKey(const Key: string; Value: TJSONObject; Options: TToonOptions; IndentLevel: Integer; out FoldedOutput: string): Boolean; static;
+    class function HasKeyFoldingCollision(ParentObject: TJSONObject; const StartKey: string; NestedObject: TJSONObject): Boolean; static;
+    class function TryFoldKey(ParentObject: TJSONObject; const Key: string; Value: TJSONObject; Options: TToonOptions; IndentLevel: Integer; out FoldedOutput: string): Boolean; static;
     class function EncodeArray(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer): string; static;
     class function EncodeArrayInline(JsonArray: TJSONArray; Options: TToonOptions; const LengthPrefix: string): string; static;
     class function EncodeArrayTabular(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer; const LengthPrefix: string): string; static;
@@ -348,7 +349,41 @@ begin
   Result := EncodeArrayList(JsonArray, Options, IndentLevel, LengthPrefix);
 end;
 
-class function TToon.TryFoldKey(const Key: string; Value: TJSONObject; Options: TToonOptions; IndentLevel: Integer; out FoldedOutput: string): Boolean;
+class function TToon.HasKeyFoldingCollision(ParentObject: TJSONObject; const StartKey: string; NestedObject: TJSONObject): Boolean;
+var
+  FoldedPath: string;
+  CurrentObj: TJSONObject;
+  Pair: TJSONPair;
+begin
+  Result := False;
+  FoldedPath := StartKey;
+  CurrentObj := NestedObject;
+
+  // Build all possible folded paths and check if they exist as literal keys
+  while (CurrentObj <> nil) and (CurrentObj.Count = 1) do
+  begin
+    FoldedPath := FoldedPath + '.' + CurrentObj.Pairs[0].JsonString.Value;
+
+    // Check if this folded path exists as a literal key in parent
+    // We need to check each pair explicitly, not use TryGetValue which might resolve paths
+    for Pair in ParentObject do
+    begin
+      if Pair.JsonString.Value = FoldedPath then
+      begin
+        Result := True;
+        Exit;
+      end;
+    end;
+
+    // Continue to next level if child is an object
+    if CurrentObj.Pairs[0].JsonValue is TJSONObject then
+      CurrentObj := CurrentObj.Pairs[0].JsonValue as TJSONObject
+    else
+      Break;
+  end;
+end;
+
+class function TToon.TryFoldKey(ParentObject: TJSONObject; const Key: string; Value: TJSONObject; Options: TToonOptions; IndentLevel: Integer; out FoldedOutput: string): Boolean;
 begin
   Result := False;
 
@@ -359,6 +394,10 @@ begin
     Exit;
 
   if Value.Count <> 1 then
+    Exit;
+
+  // Check for key folding collisions
+  if HasKeyFoldingCollision(ParentObject, Key, Value) then
     Exit;
 
   var FoldedKey := Key;
@@ -429,7 +468,7 @@ begin
           Continue;
 
         var FoldedResult: string;
-        if TryFoldKey(Key, NestedObject, Options, IndentLevel, FoldedResult) then
+        if TryFoldKey(JsonObject, Key, NestedObject, Options, IndentLevel, FoldedResult) then
         begin
           if not IsFirst then
             Builder.AppendLine;

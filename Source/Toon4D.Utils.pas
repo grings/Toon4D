@@ -55,7 +55,8 @@ begin
     Exit;
   end;
 
-  var LooksLikeNumber := TRegEx.IsMatch(Value, '^-?\d+(\.\d+)?$');
+  // Quote if it looks like a number pattern to avoid ambiguity
+  var LooksLikeNumber := TRegEx.IsMatch(Value, '^-?\d+(\.\d+)?([eE][+-]?\d+)?$');
   if LooksLikeNumber then
   begin
     Result := True;
