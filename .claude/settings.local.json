@@ -3,7 +3,8 @@
     "allow": [
       "WebSearch",
       "WebFetch(domain:github.com)",
-      "Bash(./build.bat)"
+      "Bash(./build.bat)",
+      "Bash(./Toon4D.Tests.exe:*)"
     ],
     "deny": [],
     "ask": []
