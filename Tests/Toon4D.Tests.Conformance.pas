@@ -454,14 +454,19 @@ end;
 
 procedure TConformanceTests.EscapeSequences_ShouldMatchExpected;
 var
-  JsonInput: string;
+  JsonObject: TJSONObject;
   Expected: string;
   Actual: string;
 begin
-  JsonInput := '{"text":"line1\\nline2\\ttab\\"quote\\\\backslash"}';
-  Expected := 'text: "line1\\nline2\\ttab\\"quote\\\\backslash"';
-  Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  JsonObject := TJSONObject.Create;
+  try
+    JsonObject.AddPair('text', 'line1'#10'line2'#9'tab"quote\backslash');
+    Expected := 'text: "line1\nline2\ttab\"quote\\backslash"';
+    Actual := TToon.JsonToToon(JsonObject);
+    Assert.AreEqual(Expected, Actual);
+  finally
+    JsonObject.Free;
+  end;
 end;
 
 procedure TConformanceTests.NumberNormalization_ShouldMatchExpected;

@@ -552,7 +552,6 @@ var
   JsonObject: TJSONObject;
   JsonArray: TJSONArray;
   ToonOutput: string;
-  Expected: string;
 begin
   JsonObject := TJSONObject.Create;
   try
@@ -562,15 +561,8 @@ begin
     JsonArray.AddElement(TJSONTrue.Create);
     JsonObject.AddPair('items', JsonArray);
 
-    Expected := '''
-items[3]:
-  - 1
-  - text
-  - true
-'''.Trim;
-
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Assert.AreEqual(Expected, ToonOutput);
+    Assert.AreEqual('items[3]: 1,text,true', ToonOutput);
   finally
     JsonObject.Free;
   end;
@@ -668,8 +660,7 @@ begin
     JsonObject.AddPair('items', JsonArray);
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Assert.Contains(ToonOutput, '- first');
-    Assert.Contains(ToonOutput, '- second');
+    Assert.AreEqual('items[2]: first,second', ToonOutput);
   finally
     JsonObject.Free;
   end;
@@ -681,6 +672,7 @@ var
   JsonArray: TJSONArray;
   Item: TJSONObject;
   ToonOutput: string;
+  Expected: string;
 begin
   JsonObject := TJSONObject.Create;
   try
@@ -692,9 +684,14 @@ begin
     JsonArray.Add(Item);
 
     JsonObject.AddPair('items', JsonArray);
-    ToonOutput := TToon.JsonToToon(JsonObject);
 
-    Assert.Contains(ToonOutput, '- id: 1');
+    Expected := '''
+items[1]{id,name}:
+  1,Alice
+'''.Trim;
+
+    ToonOutput := TToon.JsonToToon(JsonObject);
+    Assert.AreEqual(Expected, ToonOutput);
   finally
     JsonObject.Free;
   end;
@@ -706,7 +703,7 @@ var
   JsonArray: TJSONArray;
   Item: TJSONObject;
   ToonOutput: string;
-  Lines: TArray<string>;
+  Expected: string;
 begin
   JsonObject := TJSONObject.Create;
   try
@@ -719,12 +716,14 @@ begin
     JsonArray.Add(Item);
 
     JsonObject.AddPair('items', JsonArray);
-    ToonOutput := TToon.JsonToToon(JsonObject);
 
-    Lines := ToonOutput.Split([#10]);
-    Assert.IsTrue(Lines[1].StartsWith('  - id:'));
-    Assert.IsTrue(Lines[2].StartsWith('    name:'));
-    Assert.IsTrue(Lines[3].StartsWith('    role:'));
+    Expected := '''
+items[1]{id,name,role}:
+  1,Alice,admin
+'''.Trim;
+
+    ToonOutput := TToon.JsonToToon(JsonObject);
+    Assert.AreEqual(Expected, ToonOutput);
   finally
     JsonObject.Free;
   end;
@@ -828,7 +827,7 @@ begin
     JsonObject.AddPair('items', JsonArray);
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Lines := ToonOutput.Split([#10]);
+    Lines := ToonOutput.Split([sLineBreak]);
 
     Assert.AreEqual('name: group', Lines[0]);
     Assert.AreEqual('items[2]: item1,item2', Lines[1]);

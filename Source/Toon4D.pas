@@ -22,7 +22,7 @@ type
   TToon = class sealed
   private
     class function GetDefaultOptions: TToonOptions; static;
-    class function EncodeObject(JsonObject: TJSONObject; Options: TToonOptions; IndentLevel: Integer): string; static;
+    class function EncodeObject(JsonObject: TJSONObject; Options: TToonOptions; IndentLevel: Integer = 0): string; static;
     class function EncodePrimitive(JsonValue: TJSONValue; Options: TToonOptions): string; static;
     class function GetIndent(Options: TToonOptions; Level: Integer): string; static;
     class function TryFoldKey(const Key: string; Value: TJSONObject; Options: TToonOptions; IndentLevel: Integer; out FoldedOutput: string): Boolean; static;
@@ -143,10 +143,17 @@ begin
     Exit;
 
   var FirstObj := JsonArray.Items[0] as TJSONObject;
+  if FirstObj.Count = 0 then
+    Exit;
+
   FieldNames := TList<string>.Create;
 
   for var Pair in FirstObj do
+  begin
     FieldNames.Add(Pair.JsonString.Value);
+    if (Pair.JsonValue is TJSONObject) or (Pair.JsonValue is TJSONArray) then
+      Exit;
+  end;
 
   for var I := 1 to JsonArray.Count - 1 do
   begin
@@ -156,7 +163,10 @@ begin
 
     for var FieldName in FieldNames do
     begin
-      if Obj.GetValue(FieldName) = nil then
+      var FieldValue := Obj.GetValue(FieldName);
+      if FieldValue = nil then
+        Exit;
+      if (FieldValue is TJSONObject) or (FieldValue is TJSONArray) then
         Exit;
     end;
   end;
@@ -185,10 +195,11 @@ end;
 
 class function TToon.EncodeArrayTabular(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer; const LengthPrefix: string): string;
 begin
-  var FieldNames: TList<string>;
+  var FieldNames: TList<string> := nil;
   if not IsUniformObjectArray(JsonArray, FieldNames) then
   begin
-    FieldNames.Free;
+    if FieldNames <> nil then
+      FieldNames.Free;
     Result := '';
     Exit;
   end;
@@ -201,7 +212,7 @@ begin
       for var I := 0 to FieldNames.Count - 1 do
       begin
         if I > 0 then
-          Builder.Append(',');
+          Builder.Append(Delimiter);
         Builder.Append(FieldNames[I]);
       end;
       Builder.Append('}:');
@@ -246,8 +257,8 @@ begin
 
       if Item is TJSONObject then
       begin
-        var ObjContent := EncodeObject(Item as TJSONObject, Options, IndentLevel + 1);
-        var Lines := ObjContent.Split([#13#10]);
+        var ObjContent := EncodeObject(Item as TJSONObject, Options);
+        var Lines := ObjContent.Split([sLineBreak]);
         for var J := 0 to High(Lines) do
         begin
           if J = 0 then
@@ -324,7 +335,7 @@ begin
     end;
   end;
 
-  if AllObjects and (TToonOption.PreferTabular in Options) then
+  if AllObjects then
   begin
     var TabularResult := EncodeArrayTabular(JsonArray, Options, IndentLevel, LengthPrefix);
     if TabularResult <> '' then
@@ -363,7 +374,18 @@ begin
     if not IsValidIdentifier(ChildKey) then
       Exit;
 
+    if (ChildValue is TJSONObject) and ((ChildValue as TJSONObject).Count <> 1) then
+      Break;
+
     FoldedKey := FoldedKey + '.' + ChildKey;
+
+    if ChildValue is TJSONArray then
+    begin
+      var ArrayOutput := EncodeArray(ChildValue as TJSONArray, Options, IndentLevel + 1);
+      FoldedOutput := Indent + FoldedKey + ArrayOutput;
+      Result := True;
+      Exit;
+    end;
 
     if not (ChildValue is TJSONObject) then
     begin
@@ -379,7 +401,7 @@ begin
   var NestedObj := EncodeObject(CurrentObj, Options, IndentLevel + 1);
   FoldedOutput := Indent + FoldedKey + ':';
   if NestedObj <> '' then
-    FoldedOutput := FoldedOutput + #13#10 + NestedObj;
+    FoldedOutput := FoldedOutput + sLineBreak + NestedObj;
   Result := True;
 end;
 
@@ -396,19 +418,23 @@ begin
     var IsFirst := True;
     for var Pair in JsonObject do
     begin
-      if not IsFirst then
-        Builder.AppendLine;
-
       var Key := Pair.JsonString.Value;
       var Value := Pair.JsonValue;
       var Indent := GetIndent(Options, IndentLevel);
 
       if Value is TJSONObject then
       begin
+        var NestedObject := Value as TJSONObject;
+        if NestedObject.Count = 0 then
+          Continue;
+
         var FoldedResult: string;
-        if TryFoldKey(Key, Value as TJSONObject, Options, IndentLevel, FoldedResult) then
+        if TryFoldKey(Key, NestedObject, Options, IndentLevel, FoldedResult) then
         begin
+          if not IsFirst then
+            Builder.AppendLine;
           Builder.Append(FoldedResult);
+          IsFirst := False;
         end
         else
         begin
@@ -416,35 +442,44 @@ begin
           if not IsValidIdentifier(Key) then
             QuotedKey := '"' + EscapeString(Key) + '"';
 
-          Builder.Append(Indent).Append(QuotedKey).Append(':');
-          var NestedObj := EncodeObject(Value as TJSONObject, Options, IndentLevel + 1);
+          var NestedObj := EncodeObject(NestedObject, Options, IndentLevel + 1);
           if NestedObj <> '' then
           begin
+            if not IsFirst then
+              Builder.AppendLine;
+            Builder.Append(Indent).Append(QuotedKey).Append(':');
             Builder.AppendLine;
             Builder.Append(NestedObj);
+            IsFirst := False;
           end;
         end;
       end
       else if Value is TJSONArray then
       begin
+        if not IsFirst then
+          Builder.AppendLine;
+
         var QuotedKey := Key;
         if not IsValidIdentifier(Key) then
           QuotedKey := '"' + EscapeString(Key) + '"';
 
         var ArrayOutput := EncodeArray(Value as TJSONArray, Options, IndentLevel + 1);
         Builder.Append(Indent).Append(QuotedKey).Append(ArrayOutput);
+        IsFirst := False;
       end
       else
       begin
+        if not IsFirst then
+          Builder.AppendLine;
+
         var QuotedKey := Key;
         if not IsValidIdentifier(Key) then
           QuotedKey := '"' + EscapeString(Key) + '"';
 
         var PrimitiveValue := EncodePrimitive(Value, Options);
         Builder.Append(Indent).Append(QuotedKey).Append(': ').Append(PrimitiveValue);
+        IsFirst := False;
       end;
-
-      IsFirst := False;
     end;
 
     Result := Builder.ToString;

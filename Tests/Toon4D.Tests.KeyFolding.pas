@@ -150,7 +150,7 @@ begin
     Options := [TToonOption.KeyFoldingSafe];
     ToonOutput := TToon.JsonToToon(JsonObject, Options);
 
-    Expected := 'data.metadata.version: 1.0';
+    Expected := 'data.metadata.version: "1.0"';
     Assert.AreEqual(Expected, ToonOutput);
   finally
     JsonObject.Free;

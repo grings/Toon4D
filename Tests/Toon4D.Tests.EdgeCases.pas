@@ -338,7 +338,7 @@ begin
     end;
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Lines := ToonOutput.Split([#10]);
+    Lines := ToonOutput.Split([sLineBreak]);
     Assert.AreEqual(100, Length(Lines));
   finally
     JsonObject.Free;
@@ -534,7 +534,7 @@ begin
     JsonObject.AddPair('bravo', '5');
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Lines := ToonOutput.Split([#10]);
+    Lines := ToonOutput.Split([sLineBreak]);
 
     Assert.IsTrue(Lines[0].StartsWith('zebra:'));
     Assert.IsTrue(Lines[1].StartsWith('yankee:'));

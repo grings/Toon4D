@@ -139,7 +139,7 @@ begin
     JsonObject.AddPair('level1', Level1);
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Lines := ToonOutput.Split([#10]);
+    Lines := ToonOutput.Split([sLineBreak]);
 
     Assert.AreEqual('level1:', Lines[0]);
     Assert.AreEqual('  level2:', Lines[1]);
@@ -268,7 +268,7 @@ begin
     JsonObject.AddPair('a', Level1);
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Lines := ToonOutput.Split([#10]);
+    Lines := ToonOutput.Split([sLineBreak]);
 
     Assert.AreEqual('a:', Lines[0]);
     Assert.AreEqual('  b:', Lines[1]);

@@ -289,8 +289,8 @@ var
   ToonOutput: string;
   Expected: string;
 begin
-  JsonString := '007';
-  Expected := '7';
+  JsonString := '{"value":"007"}';
+  Expected := 'value: "007"';
   ToonOutput := TToon.JsonToToon(JsonString);
   Assert.AreEqual(Expected, ToonOutput);
 end;
@@ -864,7 +864,7 @@ begin
     JsonObject.AddPair('third', 'value3');
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Lines := ToonOutput.Split([#10]);
+    Lines := ToonOutput.Split([sLineBreak]);
 
     Assert.AreEqual(3, Length(Lines));
     Assert.AreEqual('first: value1', Lines[0]);
@@ -888,7 +888,7 @@ begin
     JsonObject.AddPair('beta', '3');
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Lines := ToonOutput.Split([#10]);
+    Lines := ToonOutput.Split([sLineBreak]);
 
     Assert.AreEqual(3, Length(Lines));
     Assert.IsTrue(Lines[0].StartsWith('zebra:'));
