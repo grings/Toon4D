@@ -1,0 +1,739 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<test-results name="C:\dev\Toon4D\Tests\Win32\Debug\Toon4D.Tests.exe" total="229" errors="5" failures="41" ignored="0" inconclusive="0" not-run="0" skipped="0" invalid="0" date="2025-11-17" time="16:10:44">
+  <culture-info current-culture="en" current-uiculture="en" />
+  <test-suite type="Assembly" name="Toon4D.Tests.exe" executed="true" result="Failure" success="False" time="16:10:44" asserts="0">
+    <results>
+        <test-suite type="Namespace" name="Toon4D" executed="true" result="Failure" success="False" time="0.022" asserts="0" >
+          <results>
+              <test-suite type="Namespace" name="Tests" executed="true" result="Failure" success="False" time="0.022" asserts="0" >
+                <results>
+                    <test-suite type="Fixture" name="TArrayTests" executed="True" result="Failure" success="False" time="0.001" >
+                      <results>
+                        <test-case name="ArrayEmpty_ShouldEncodeWithZeroLength" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayPrimitivesInline_ShouldEncodeCommaSeparated" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayStringsInline_ShouldEncodeWithQuotesWhenNeeded" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayNumbersInline_ShouldEncodeCanonical" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayBooleansInline_ShouldEncodeLowercase" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayMixedPrimitivesInline_ShouldEncodeAll" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayWithNullInline_ShouldEncodeNull" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArraySingleElement_ShouldEncodeWithLengthOne" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayTabularUniformObjects_ShouldEncodeWithFieldHeader" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayTabularSingleRow_ShouldEncodeOneRow" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayTabularMultipleRows_ShouldEncodeIndentedRows" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayTabularFieldOrder_ShouldPreserveOrder" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayTabularWithNumbers_ShouldEncodeCanonical" executed="True" result="Success" success="True" time="0.001" asserts="0" />
+                        <test-case name="ArrayTabularWithBooleans_ShouldEncodeLowercase" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayTabularWithNull_ShouldEncodeNull" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayTabularWithQuotedStrings_ShouldQuote" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayTabularEmptyStrings_ShouldQuote" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayListMixedTypes_ShouldEncodeWithHyphens" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Expected [items[3]:
+  - 1
+  - text
+  - true] but got [items[3]: 1,text,true]  ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="ArrayListObjects_ShouldEncodeNestedObjects" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Expected [items[2]:
+  - id: 1
+    name: Alice
+  - id: 2
+    role: admin] but got [items[2]:
+  -     id: 1
+        name: Alice
+  -     id: 2
+        role: admin]  ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="ArrayListNestedArrays_ShouldEncodeNested" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayListPrimitiveOnHyphenLine_ShouldEncodeInline" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [items[2]: first,second] does not contain [- first] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="ArrayListObjectFirstFieldOnHyphen_ShouldEncodeFirstField" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [items[1]{id,name}:
+  1,Alice] does not contain [- id: 1] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="ArrayListObjectRemainingFieldsIndented_ShouldIndent" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Condition is False when True expected. [] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="ArrayNonUniformObjects_ShouldUseListFormat" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [items[2]:
+  -     id: 1
+        name: Alice
+  -     id: 2
+        role: admin] does not contain [- id:] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="ArrayObjectsWithNestedValues_ShouldUseListFormat" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [users[1]{id,address}:
+  1,] does not contain [users[1]:] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="ArrayRootLevel_ShouldEncodeWithoutKey" executed="True" result="Error" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Array encoding not implemented yet ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="ArrayNestedInObject_ShouldIndentProperly" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Expected [name: group] but got [name: group]  ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="ArrayOfArraysPrimitives_ShouldEncodeAsListItems" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayLengthDeclaration_ShouldMatchActualCount" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                      </results>
+                    </test-suite>
+                    <test-suite type="Fixture" name="TConformanceTests" executed="True" result="Failure" success="False" time="0.001" >
+                      <results>
+                        <test-case name="PrimitiveString_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="PrimitiveNumber_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="PrimitiveBoolean_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="PrimitiveNull_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="SimpleObject_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NestedObject_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.001" asserts="0" />
+                        <test-case name="ArrayPrimitive_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayTabular_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayList_ShouldMatchExpected" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Expected [items[3]:
+  - 1
+  - key: value
+  - text] but got [items[3]:
+  - 1
+  -     key: value
+  - text]  ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="ArrayEmpty_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayNested_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="DelimiterComma_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="DelimiterTab_ShouldMatchExpected" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [items[3]	: a	b	c] does not contain [items[3	]:] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="DelimiterPipe_ShouldMatchExpected" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Expected [items[3|]: a|b|c] but got [items[3]|: a|b|c]  ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="KeyFoldingSafe_ShouldMatchExpected" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Expected [data.metadata.version: 1.0] but got [data.metadata.version: "1.0"]  ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="KeyFoldingAggressive_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="QuotingEmpty_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="QuotingWhitespace_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="QuotingReserved_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="QuotingNumeric_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="QuotingSpecialChars_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="EscapeSequences_ShouldMatchExpected" executed="True" result="Error" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Invalid JSON input: {"text":"line1\\nline2\\ttab\\"quote\\\\backslash"} ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="NumberNormalization_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NumberNegativeZero_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NumberTrailingZeros_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NumberScientificNotation_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="IndentationTwoSpaces_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="IndentationFourSpaces_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="WhitespaceNoTrailing_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="KeyEncodingUnquoted_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="KeyEncodingQuoted_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="KeyEncodingDotted_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="KeyEncodingUnderscore_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="TabularUniformObjects_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="TabularFieldOrder_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="TabularWithNull_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="TabularWithBooleans_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="TabularWithNumbers_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ListMixedTypes_ShouldMatchExpected" executed="True" result="Failure" success="False" time="0.001" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [items[4]: 1,text,true,null] does not contain [- 1] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="ListNestedObjects_ShouldMatchExpected" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [items[2]:
+  -     a: 1
+  -     a: 2
+        b: 3] does not contain [- a: 1] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="ListNestedArrays_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="RootPrimitive_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="RootArray_ShouldMatchExpected" executed="True" result="Error" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Array encoding not implemented yet ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="RootObject_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ComplexNested_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="UnicodeCharacters_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="EmptyStringValue_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="EmptyObject_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="SingleKeyObject_ShouldMatchExpected" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                      </results>
+                    </test-suite>
+                    <test-suite type="Fixture" name="TDelimiterTests" executed="True" result="Failure" success="False" time="0.001" >
+                      <results>
+                        <test-case name="Comma_InlineArray_ShouldUseComma" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="Tab_InlineArray_ShouldUseTab" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Expected [items[3	]: a	b	c] but got [items[3]	: a	b	c]  ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="Pipe_InlineArray_ShouldUsePipe" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Expected [items[3|]: a|b|c] but got [items[3]|: a|b|c]  ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="Comma_TabularArray_ShouldUseComma" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [users[1]:
+  -     id: 1
+        name: Alice] does not contain [users[1]{id,name}:] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="Tab_TabularArray_ShouldUseTabInHeader" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [users[1]	:
+  -     id: 1
+        name: Alice] does not contain [users[1	]{id	name}:] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="Pipe_TabularArray_ShouldUsePipeInHeader" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [users[1]|:
+  -     id: 1
+        name: Alice] does not contain [users[1|]{id|name}:] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="Tab_TabularRows_ShouldSeparateWithTab" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [users[1]	:
+  -     id: 1
+        name: Alice] does not contain [1	Alice] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="Pipe_TabularRows_ShouldSeparateWithPipe" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [users[1]|:
+  -     id: 1
+        name: Alice] does not contain [1|Alice] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="Comma_StringWithComma_ShouldQuote" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="Tab_StringWithTab_ShouldQuote" executed="True" result="Success" success="True" time="0.001" asserts="0" />
+                        <test-case name="Pipe_StringWithPipe_ShouldQuote" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [items[2]|: a|b|c] does not contain ["a|b"] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="Comma_Default_ShouldNotShowInHeader" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [items[1]:
+  -     id: 1] does not contain [items[1]{id}:] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="Tab_ShouldShowInHeader" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [items[1]	: a] does not contain [[1	]:] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="Pipe_ShouldShowInHeader" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [items[1]|: a] does not contain [[1|]:] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="NestedArrays_CanHaveDifferentDelimiters" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                      </results>
+                    </test-suite>
+                    <test-suite type="Fixture" name="TEdgeCasesTests" executed="True" result="Failure" success="False" time="0.002" >
+                      <results>
+                        <test-case name="NilJsonValue_ShouldRaiseException" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="EmptyJsonString_ShouldReturnEmpty" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="RootPrimitive_ShouldEncodePrimitive" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="RootArray_ShouldEncodeWithoutKey" executed="True" result="Error" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Array encoding not implemented yet ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="RootObject_ShouldEncodeNormally" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="VeryLargeNumber_ShouldEncodeDecimal" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="VerySmallNumber_ShouldEncodeDecimal" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NumberMaxFloat_ShouldEncode" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NumberMinFloat_ShouldEncode" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringVeryLong_ShouldPreserve" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringAllWhitespace_ShouldQuote" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringOnlyNewlines_ShouldQuoteAndEscape" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ArrayVeryLarge_ShouldEncodeAll" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ObjectVeryManyKeys_ShouldEncodeAll" executed="True" result="Success" success="True" time="0.001" asserts="0" />
+                        <test-case name="DeeplyNestedStructure_ShouldHandleDepth" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="CircularReference_ShouldHandleGracefully" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="MalformedJsonString_ShouldRaiseException" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="UnicodeEdgeCases_ShouldPreserve" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="EmojiInKeys_ShouldQuoteKey" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="EmptyArrayInArray_ShouldEncode" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="EmptyObjectInArray_ShouldEncode" executed="True" result="Failure" success="False" time="0.001" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [items[1]{}:
+  ] does not contain [items[1]:] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="NullInObjectKey_ShouldEncode" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="BooleanInKey_ShouldConvertToString" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [true: value] does not contain ["true":] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="NumberInKey_ShouldConvertToString" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="KeyOrderWithManyKeys_ShouldPreserve" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="TabularWithEmptyFields_ShouldQuote" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="TabularWithNullFields_ShouldEncodeNull" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ListArrayWithOnlyNulls_ShouldEncodeNulls" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringWithAllEscapeCharacters_ShouldEscapeAll" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringWithControlCharacters_ShouldQuoteAndEscape" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ZeroLengthArrayMultiple_ShouldEncodeAll" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                      </results>
+                    </test-suite>
+                    <test-suite type="Fixture" name="TIntegrationTests" executed="True" result="Failure" success="False" time="0.014" >
+                      <results>
+                        <test-case name="RestApiUserList_ShouldEncodeAsTabular" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="RestApiNestedResponse_ShouldEncodeWithKeyFolding" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [data.metadata:
+  version: "1.0"
+  timestamp: "2025-01-15T10:30:00Z"] does not contain [data.metadata.version:] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="EcommerceOrderList_ShouldEncodeTabularWithMixedTypes" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="DatabaseQueryResult_ShouldEncodeAsTabular" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ConfigurationFile_ShouldEncodeNestedObjects" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="LargeDataset100Rows_ShouldHandlePerformance" executed="True" result="Success" success="True" time="0.001" asserts="0" />
+                        <test-case name="LargeDataset1000Rows_ShouldHandlePerformance" executed="True" result="Success" success="True" time="0.010" asserts="0" />
+                        <test-case name="DeeplyNested20Levels_ShouldHandleDepth" executed="True" result="Success" success="True" time="0.001" asserts="0" />
+                        <test-case name="MixedDelimitersInData_ShouldChooseCorrectDelimiter" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [items[3]|: "value,with,commas"|value-with-dashes|normal] does not contain [items[3|]:] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="UnicodeMultilingual_ShouldPreserveAllCharacters" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="EmojiInKeysAndValues_ShouldHandleCorrectly" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="TimeSeriesData_ShouldEncodeAsTabular" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [metrics[3]{timestamp,cpu,memory}:
+  "2025-01-01T00:00:00Z",45.2,62.1
+  "2025-01-01T01:00:00Z",52.8,58.3
+  "2025-01-01T02:00:00Z",38.5,64.7] does not contain [2025-01-01T00:00:00Z,45.2,62.1] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="GitHubRepositoryList_ShouldEncodeAsTabular" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ProductCatalog_ShouldEncodeWithNesting" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="AnalyticsReport_ShouldEncodeComplexStructure" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="EmptyArraysInComplexStructure_ShouldHandleGracefully" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NullValuesInTabular_ShouldEncodeNull" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="MixedPrimitiveAndObjectArrays_ShouldDetectFormats" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="LongStringsInTabular_ShouldQuoteWhenNeeded" executed="True" result="Success" success="True" time="0.001" asserts="0" />
+                        <test-case name="NumericStringsInData_ShouldQuoteCorrectly" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="BooleanStringsInData_ShouldQuoteCorrectly" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ReservedWordsInData_ShouldQuoteCorrectly" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="SpecialCharactersInKeys_ShouldQuoteKeys" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="TokenCountComparison_JsonVsToon_ShouldReduceTokens" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="RealWorldLlmPrompt_UserDataAnalysis" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="RealWorldLlmPrompt_ProductRecommendation" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="RealWorldLlmPrompt_DataValidation" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="AllDelimiterTypes_ShouldWorkCorrectly" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [items[3]	: a	b	c] does not contain [items[3	]:] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="AllIndentSizes_ShouldFormatCorrectly" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="GracefulDegradation_InvalidNumbers_ShouldConvertToNull" executed="True" result="Success" success="True" time="0.001" asserts="0" />
+                      </results>
+                    </test-suite>
+                    <test-suite type="Fixture" name="TKeyFoldingTests" executed="True" result="Failure" success="False" time="0.001" >
+                      <results>
+                        <test-case name="KeyFoldingDisabled_ShouldNotFold" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="KeyFoldingSafe_SingleKeyChain_ShouldFold" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="KeyFoldingSafe_TwoLevelChain_ShouldFold" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Expected [data.metadata.version: 1.0] but got [data.metadata.version: "1.0"]  ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="KeyFoldingSafe_ThreeLevelChain_ShouldFold" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="KeyFoldingSafe_InvalidIdentifier_ShouldNotFold" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="KeyFoldingSafe_KeyWithSpaces_ShouldNotFold" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="KeyFoldingSafe_KeyWithHyphen_ShouldNotFold" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="KeyFoldingSafe_KeyStartingWithNumber_ShouldNotFold" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="KeyFoldingSafe_ValidUnderscore_ShouldFold" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="KeyFoldingSafe_ValidDot_ShouldFold" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="KeyFoldingSafe_ChainEndsWithPrimitive_ShouldFold" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="KeyFoldingSafe_ChainEndsWithArray_ShouldFold" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Expected [data.items[2]: a,b] but got [data.items: ]  ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="KeyFoldingSafe_ChainEndsWithObject_ShouldNotFold" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [data.nested:
+  a: 1
+  b: 2] does not contain [data:] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="KeyFoldingSafe_MultipleKeysAtEnd_ShouldNotFold" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="KeyFoldingSafe_CollisionDetection_ShouldNotFold" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Condition is True when False expected. ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="KeyFoldingAggressive_ShouldFoldMoreCases" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                      </results>
+                    </test-suite>
+                    <test-suite type="Fixture" name="TNestingTests" executed="True" result="Failure" success="False" time="0.001" >
+                      <results>
+                        <test-case name="NestedObjectSingleLevel_ShouldIndentTwoSpaces" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NestedObjectTwoLevels_ShouldIndentFourSpaces" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NestedObjectThreeLevels_ShouldIndentSixSpaces" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Expected [level1:] but got [level1:]  ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="NestedObjectWithPrimitives_ShouldIndentAll" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NestedArrayInObject_ShouldIndentArray" executed="True" result="Success" success="True" time="0.001" asserts="0" />
+                        <test-case name="NestedObjectInArray_ShouldIndentObject" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [users[1]{id,address}:
+  1,] does not contain [users[1]:] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="DeepNesting_ShouldMaintainConsistentIndent" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Expected [a:] but got [a:]  ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="IndentSize2Spaces_ShouldUseDefault" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="IndentSize4Spaces_ShouldUseWhenConfigured" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="MixedNestingObjectsArrays_ShouldIndentCorrectly" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="EmptyNestedObject_ShouldProduceKeyOnly" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Expected [] but got [empty:]  ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="NestedObjectWithMultipleKeys_ShouldIndentEach" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ListArrayWithNestedObjects_ShouldIndentProperly" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ [items[2]{id,coords}:
+  1,
+  2,] does not contain [items[2]:] ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                      </results>
+                    </test-suite>
+                    <test-suite type="Fixture" name="TPrimitivesTests" executed="True" result="Failure" success="False" time="0.001" >
+                      <results>
+                        <test-case name="NumberZero_ShouldEncodeAsZero" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NumberPositiveInteger_ShouldEncodeWithoutDecimals" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NumberNegativeInteger_ShouldEncodeWithoutDecimals" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NumberPositiveDecimal_ShouldEncodeCanonicalForm" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NumberNegativeDecimal_ShouldEncodeCanonicalForm" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NumberZeroPointZero_ShouldEncodeAsZero" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NumberNegativeZero_ShouldNormalizeToZero" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NumberWithTrailingZeros_ShouldRemoveTrailingZeros" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NumberWithLeadingZeros_ShouldRemoveLeadingZeros" executed="True" result="Error" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Invalid JSON input: 007 ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="NumberScientificNotation_ShouldExpandToDecimal" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NumberVeryLarge_ShouldEncodeInDecimalForm" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="NumberVerySmall_ShouldEncodeInDecimalForm" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringEmpty_ShouldBeQuoted" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringSimple_ShouldBeUnquoted" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringWithSpaces_ShouldBeUnquoted" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringLeadingWhitespace_ShouldBeQuoted" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringTrailingWhitespace_ShouldBeQuoted" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringLooksLikeTrue_ShouldBeQuoted" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringLooksLikeFalse_ShouldBeQuoted" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringLooksLikeNull_ShouldBeQuoted" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringLooksLikeNumber_ShouldBeQuoted" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringWithColon_ShouldBeQuoted" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringWithQuote_ShouldBeQuotedAndEscaped" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringWithBackslash_ShouldBeQuotedAndEscaped" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringWithNewline_ShouldBeQuotedAndEscaped" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringWithCarriageReturn_ShouldBeQuotedAndEscaped" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringWithTab_ShouldBeQuotedAndEscaped" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringWithAllEscapes_ShouldEscapeAll" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringWithBrackets_ShouldBeQuoted" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringWithBraces_ShouldBeQuoted" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringWithLeadingHyphen_ShouldBeQuoted" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringUnicode_ShouldPreserveUnicode" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="StringEmoji_ShouldPreserveEmoji" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="BooleanTrue_ShouldEncodeLowercase" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="BooleanFalse_ShouldEncodeLowercase" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="Null_ShouldEncodeLowercase" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ObjectWithPrimitives_ShouldEncodeKeyValuePairs" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ObjectWithStringKey_ShouldEncodeUnquotedKey" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ObjectWithKeyNeedingQuotes_ShouldQuoteKey" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ObjectWithDottedKey_ShouldNotQuoteKey" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ObjectWithUnderscoreKey_ShouldNotQuoteKey" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ObjectWithNumberStartKey_ShouldQuoteKey" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ObjectEmpty_ShouldProduceEmptyOutput" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="ObjectSinglePrimitive_ShouldEncodeSingleLine" executed="True" result="Success" success="True" time="0.001" asserts="0" />
+                        <test-case name="ObjectMultiplePrimitives_ShouldEncodeMultipleLines" executed="True" result="Failure" success="False" time="0.000" asserts="0" >
+                          <failure>
+                            <message>
+                              <![CDATA[ Expected [first: value1] but got [first: value1]  ]]>
+                            </message>
+                            <stack-trace>
+                              <![CDATA[  ]]>
+                            </stack-trace>
+                          </failure>
+                        </test-case>
+                        <test-case name="ObjectKeyOrder_ShouldPreserveOrder" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                      </results>
+                    </test-suite>
+                </results>
+              </test-suite>
+          </results>
+        </test-suite>
+    </results>
+  </test-suite>
+</test-results>

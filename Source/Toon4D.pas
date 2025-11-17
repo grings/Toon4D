@@ -15,6 +15,7 @@ interface
 uses
   System.SysUtils,
   System.JSON,
+  System.Generics.Collections,
   Toon4D.Types;
 
 type
@@ -25,6 +26,12 @@ type
     class function EncodePrimitive(JsonValue: TJSONValue; Options: TToonOptions): string; static;
     class function GetIndent(Options: TToonOptions; Level: Integer): string; static;
     class function TryFoldKey(const Key: string; Value: TJSONObject; Options: TToonOptions; IndentLevel: Integer; out FoldedOutput: string): Boolean; static;
+    class function EncodeArray(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer): string; static;
+    class function EncodeArrayInline(JsonArray: TJSONArray; Options: TToonOptions; const LengthPrefix: string): string; static;
+    class function EncodeArrayTabular(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer; const LengthPrefix: string): string; static;
+    class function EncodeArrayList(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer; const LengthPrefix: string): string; static;
+    class function IsUniformObjectArray(JsonArray: TJSONArray; out FieldNames: TList<string>): Boolean; static;
+    class function GetDelimiter(Options: TToonOptions): Char; static;
   public
     class function JsonToToon(
       JsonValue: TJSONValue;
@@ -109,6 +116,223 @@ begin
     SpaceCount := 4;
 
   Result := StringOfChar(' ', SpaceCount * Level);
+end;
+
+class function TToon.GetDelimiter(Options: TToonOptions): Char;
+begin
+  if TToonOption.DelimiterTab in Options then
+  begin
+    Result := #9;
+    Exit;
+  end;
+
+  if TToonOption.DelimiterPipe in Options then
+  begin
+    Result := '|';
+    Exit;
+  end;
+
+  Result := ',';
+end;
+
+class function TToon.IsUniformObjectArray(JsonArray: TJSONArray; out FieldNames: TList<string>): Boolean;
+begin
+  Result := False;
+
+  if JsonArray.Count = 0 then
+    Exit;
+
+  var FirstObj := JsonArray.Items[0] as TJSONObject;
+  FieldNames := TList<string>.Create;
+
+  for var Pair in FirstObj do
+    FieldNames.Add(Pair.JsonString.Value);
+
+  for var I := 1 to JsonArray.Count - 1 do
+  begin
+    var Obj := JsonArray.Items[I] as TJSONObject;
+    if Obj.Count <> FieldNames.Count then
+      Exit;
+
+    for var FieldName in FieldNames do
+    begin
+      if Obj.GetValue(FieldName) = nil then
+        Exit;
+    end;
+  end;
+
+  Result := True;
+end;
+
+class function TToon.EncodeArrayInline(JsonArray: TJSONArray; Options: TToonOptions; const LengthPrefix: string): string;
+begin
+  var Delimiter := GetDelimiter(Options);
+  var Builder := TStringBuilder.Create;
+  try
+    Builder.Append(LengthPrefix).Append(': ');
+    for var I := 0 to JsonArray.Count - 1 do
+    begin
+      if I > 0 then
+        Builder.Append(Delimiter);
+      var PrimitiveValue := EncodePrimitive(JsonArray.Items[I], Options);
+      Builder.Append(PrimitiveValue);
+    end;
+    Result := Builder.ToString;
+  finally
+    Builder.Free;
+  end;
+end;
+
+class function TToon.EncodeArrayTabular(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer; const LengthPrefix: string): string;
+begin
+  var FieldNames: TList<string>;
+  if not IsUniformObjectArray(JsonArray, FieldNames) then
+  begin
+    FieldNames.Free;
+    Result := '';
+    Exit;
+  end;
+
+  try
+    var Delimiter := GetDelimiter(Options);
+    var Builder := TStringBuilder.Create;
+    try
+      Builder.Append(LengthPrefix).Append('{');
+      for var I := 0 to FieldNames.Count - 1 do
+      begin
+        if I > 0 then
+          Builder.Append(',');
+        Builder.Append(FieldNames[I]);
+      end;
+      Builder.Append('}:');
+
+      var Indent := GetIndent(Options, IndentLevel);
+      for var I := 0 to JsonArray.Count - 1 do
+      begin
+        Builder.AppendLine;
+        Builder.Append(Indent);
+        var Obj := JsonArray.Items[I] as TJSONObject;
+        for var J := 0 to FieldNames.Count - 1 do
+        begin
+          if J > 0 then
+            Builder.Append(Delimiter);
+          var FieldValue := Obj.GetValue(FieldNames[J]);
+          var PrimitiveValue := EncodePrimitive(FieldValue, Options);
+          Builder.Append(PrimitiveValue);
+        end;
+      end;
+
+      Result := Builder.ToString;
+    finally
+      Builder.Free;
+    end;
+  finally
+    FieldNames.Free;
+  end;
+end;
+
+class function TToon.EncodeArrayList(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer; const LengthPrefix: string): string;
+begin
+  var Builder := TStringBuilder.Create;
+  try
+    Builder.Append(LengthPrefix).Append(':');
+    var Indent := GetIndent(Options, IndentLevel);
+
+    for var I := 0 to JsonArray.Count - 1 do
+    begin
+      Builder.AppendLine;
+      Builder.Append(Indent).Append('- ');
+      var Item := JsonArray.Items[I];
+
+      if Item is TJSONObject then
+      begin
+        var ObjContent := EncodeObject(Item as TJSONObject, Options, IndentLevel + 1);
+        var Lines := ObjContent.Split([#13#10]);
+        for var J := 0 to High(Lines) do
+        begin
+          if J = 0 then
+            Builder.Append(Lines[J])
+          else
+          begin
+            Builder.AppendLine;
+            Builder.Append(Indent).Append('  ').Append(Lines[J]);
+          end;
+        end;
+      end
+      else if Item is TJSONArray then
+      begin
+        var ArrayContent := EncodeArray(Item as TJSONArray, Options, IndentLevel + 1);
+        Builder.Append(ArrayContent);
+      end
+      else
+      begin
+        var PrimitiveValue := EncodePrimitive(Item, Options);
+        Builder.Append(PrimitiveValue);
+      end;
+    end;
+
+    Result := Builder.ToString;
+  finally
+    Builder.Free;
+  end;
+end;
+
+class function TToon.EncodeArray(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer): string;
+begin
+  var ArrayLength := JsonArray.Count;
+  var Delimiter := GetDelimiter(Options);
+  var LengthPrefix := '[' + ArrayLength.ToString + ']';
+
+  if TToonOption.DelimiterTab in Options then
+    LengthPrefix := LengthPrefix + Delimiter;
+
+  if TToonOption.DelimiterPipe in Options then
+    LengthPrefix := LengthPrefix + Delimiter;
+
+  if ArrayLength = 0 then
+  begin
+    Result := LengthPrefix + ':';
+    Exit;
+  end;
+
+  var AllPrimitives := True;
+  for var I := 0 to ArrayLength - 1 do
+  begin
+    var Item := JsonArray.Items[I];
+    if (Item is TJSONObject) or (Item is TJSONArray) then
+    begin
+      AllPrimitives := False;
+      Break;
+    end;
+  end;
+
+  if AllPrimitives then
+  begin
+    Result := EncodeArrayInline(JsonArray, Options, LengthPrefix);
+    Exit;
+  end;
+
+  var AllObjects := True;
+  for var I := 0 to ArrayLength - 1 do
+  begin
+    if not (JsonArray.Items[I] is TJSONObject) then
+    begin
+      AllObjects := False;
+      Break;
+    end;
+  end;
+
+  if AllObjects and (TToonOption.PreferTabular in Options) then
+  begin
+    var TabularResult := EncodeArrayTabular(JsonArray, Options, IndentLevel, LengthPrefix);
+    if TabularResult <> '' then
+    begin
+      Result := TabularResult;
+      Exit;
+    end;
+  end;
+
+  Result := EncodeArrayList(JsonArray, Options, IndentLevel, LengthPrefix);
 end;
 
 class function TToon.TryFoldKey(const Key: string; Value: TJSONObject; Options: TToonOptions; IndentLevel: Integer; out FoldedOutput: string): Boolean;
@@ -201,7 +425,12 @@ begin
       end
       else if Value is TJSONArray then
       begin
-        raise EToonEncodingException.Create('Array encoding not implemented yet');
+        var QuotedKey := Key;
+        if not IsValidIdentifier(Key) then
+          QuotedKey := '"' + EscapeString(Key) + '"';
+
+        var ArrayOutput := EncodeArray(Value as TJSONArray, Options, IndentLevel + 1);
+        Builder.Append(Indent).Append(QuotedKey).Append(ArrayOutput);
       end
       else
       begin
