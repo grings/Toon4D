@@ -138,7 +138,7 @@ begin
     end
     else
     begin
-      Result := Format('%.0f', [DoubleValue]);
+      Result := FloatToStrF(DoubleValue, ffFixed, 30, 0);
       Result := StringReplace(Result, ',', '.', [rfReplaceAll]);
       Exit;
     end;
@@ -149,7 +149,7 @@ begin
 
   if StringValue.Contains('E') or StringValue.Contains('e') then
   begin
-    StringValue := FloatToStrF(DoubleValue, ffFixed, 18, 18);
+    StringValue := FloatToStrF(DoubleValue, ffFixed, 30, 18);
     StringValue := StringReplace(StringValue, ',', '.', [rfReplaceAll]);
   end;
 

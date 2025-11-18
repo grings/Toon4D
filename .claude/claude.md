@@ -10,13 +10,17 @@ This document provides essential context for Claude Code when working on the Too
 
 ## Quick Reference Links
 
-### Official TOON Specifications
-- **Main Spec:** https://github.com/toon-format/spec
+### Official TOON Specifications (⚠️ AUTHORITATIVE SOURCE)
+- **Official Spec (AUTHORITATIVE):** `ToonSpec_Official.md` - Downloaded from https://github.com/toon-format/spec/blob/main/SPEC.md
+- **Main Spec Repository:** https://github.com/toon-format/spec
 - **Format Repository:** https://github.com/toon-format/toon
 - **Test Fixtures (340+):** https://github.com/toon-format/spec/tree/main/tests/fixtures
 
+⚠️ **IMPORTANT:** When there is a conflict between our local `SPEC.md` and `ToonSpec_Official.md`, the official spec (`ToonSpec_Official.md`) is ALWAYS authoritative and takes precedence.
+
 ### Key Documents
-- `SPEC.md` - Comprehensive technical specification (1300+ lines)
+- `ToonSpec_Official.md` - ⚠️ **AUTHORITATIVE** Official TOON spec (1435 lines, downloaded from GitHub)
+- `SPEC.md` - Our implementation specification (may contain outdated interpretations)
 - `README.md` - User-facing documentation
 - This file - Development context for Claude Code
 

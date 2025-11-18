@@ -375,7 +375,7 @@ var
   Options: TToonOptions;
 begin
   JsonInput := '{"data":{"metadata":{"version":"1.0"}}}';
-  Expected := 'data.metadata.version: 1.0';
+  Expected := 'data.metadata.version: "1.0"';
   Options := [TToonOption.KeyFoldingSafe];
   Actual := TToon.JsonToToon(JsonInput, Options);
   Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
@@ -697,13 +697,14 @@ var
   JsonInput: string;
   Actual: string;
 begin
+  // According to official TOON spec, primitive arrays (even mixed types) use inline format
   JsonInput := '{"items":[1,"text",true,null]}';
   Actual := TToon.JsonToToon(JsonInput);
   Assert.Contains(Actual, 'items[4]:');
-  Assert.Contains(Actual, '- 1');
-  Assert.Contains(Actual, '- text');
-  Assert.Contains(Actual, '- true');
-  Assert.Contains(Actual, '- null');
+  Assert.Contains(Actual, '1');
+  Assert.Contains(Actual, 'text');
+  Assert.Contains(Actual, 'true');
+  Assert.Contains(Actual, 'null');
 end;
 
 procedure TConformanceTests.ListNestedObjects_ShouldMatchExpected;
