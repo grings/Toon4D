@@ -128,6 +128,26 @@ begin
   if SameValue(DoubleValue, -0.0) then
     DoubleValue := 0.0;
 
+  var OriginalValue := JsonNumber.Value;
+  OriginalValue := StringReplace(OriginalValue, ',', '.', [rfReplaceAll]);
+
+  if not (OriginalValue.Contains('E') or OriginalValue.Contains('e')) then
+  begin
+    if (OriginalValue = '-0') or (OriginalValue = '-0.0') then
+      OriginalValue := '0';
+
+    if OriginalValue.Contains('.') then
+    begin
+      while OriginalValue.EndsWith('0') and not OriginalValue.EndsWith('.0') do
+        OriginalValue := OriginalValue.Substring(0, OriginalValue.Length - 1);
+
+      if OriginalValue.EndsWith('.0') then
+        OriginalValue := OriginalValue.Substring(0, OriginalValue.Length - 2);
+    end;
+    Result := OriginalValue;
+    Exit;
+  end;
+
   if Frac(DoubleValue) = 0 then
   begin
     if (DoubleValue >= Low(Int64)) and (DoubleValue <= High(Int64)) then

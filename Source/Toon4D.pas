@@ -26,12 +26,13 @@ type
     class function EncodePrimitive(JsonValue: TJSONValue; Options: TToonOptions): string; static;
     class function GetIndent(Options: TToonOptions; Level: Integer): string; static;
     class function GetArrayContentLevel(IndentLevel: Integer): Integer; static;
+    class function GetNestedLevel(IndentLevel: Integer): Integer; static;
     class function HasKeyFoldingCollision(ParentObject: TJSONObject; const StartKey: string; NestedObject: TJSONObject): Boolean; static;
     class function TryFoldKey(ParentObject: TJSONObject; const Key: string; Value: TJSONObject; Options: TToonOptions; IndentLevel: Integer; out FoldedOutput: string): Boolean; static;
-    class function EncodeArray(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer): string; static;
+    class function EncodeArray(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer; IsRootContext: Boolean = False): string; static;
     class function EncodeArrayInline(JsonArray: TJSONArray; Options: TToonOptions; const LengthPrefix: string): string; static;
     class function EncodeArrayTabular(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer; const LengthPrefix: string): string; static;
-    class function EncodeArrayList(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer; const LengthPrefix: string): string; static;
+    class function EncodeArrayList(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer; const LengthPrefix: string; IsRootContext: Boolean = False): string; static;
     class function IsUniformObjectArray(JsonArray: TJSONArray; out FieldNames: TList<string>): Boolean; static;
     class function GetDelimiter(Options: TToonOptions): Char; static;
   public
@@ -125,6 +126,11 @@ begin
   Result := IndentLevel;
   if Result = 0 then
     Result := 1;
+end;
+
+class function TToon.GetNestedLevel(IndentLevel: Integer): Integer;
+begin
+  Result := IndentLevel + 1;
 end;
 
 class function TToon.GetDelimiter(Options: TToonOptions): Char;
@@ -255,16 +261,19 @@ begin
   end;
 end;
 
-class function TToon.EncodeArrayList(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer; const LengthPrefix: string): string;
+class function TToon.EncodeArrayList(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer; const LengthPrefix: string; IsRootContext: Boolean): string;
 begin
   var Builder := TStringBuilder.Create;
   try
     Builder.Append(LengthPrefix).Append(':');
-    var Indent := GetIndent(Options, GetArrayContentLevel(IndentLevel));
+    var ContentLevel := IndentLevel;
+    if IsRootContext then
+      ContentLevel := 1;
+    var Indent := GetIndent(Options, ContentLevel);
 
     for var I := 0 to JsonArray.Count - 1 do
     begin
-      Builder.AppendLine;
+      Builder.Append(ToonLineBreak);
       Builder.Append(Indent).Append('- ');
       var Item := JsonArray.Items[I];
 
@@ -285,7 +294,7 @@ begin
       end
       else if Item is TJSONArray then
       begin
-        var ArrayContent := EncodeArray(Item as TJSONArray, Options, IndentLevel + 1);
+        var ArrayContent := EncodeArray(Item as TJSONArray, Options, GetNestedLevel(IndentLevel));
         Builder.Append(ArrayContent);
       end
       else
@@ -301,7 +310,7 @@ begin
   end;
 end;
 
-class function TToon.EncodeArray(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer): string;
+class function TToon.EncodeArray(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer; IsRootContext: Boolean): string;
 begin
   var ArrayLength := JsonArray.Count;
   var Delimiter := GetDelimiter(Options);
@@ -358,7 +367,7 @@ begin
     end;
   end;
 
-  Result := EncodeArrayList(JsonArray, Options, IndentLevel, LengthPrefix);
+  Result := EncodeArrayList(JsonArray, Options, IndentLevel, LengthPrefix, IsRootContext);
 end;
 
 class function TToon.HasKeyFoldingCollision(ParentObject: TJSONObject; const StartKey: string; NestedObject: TJSONObject): Boolean;
@@ -432,7 +441,7 @@ begin
 
     if ChildValue is TJSONArray then
     begin
-      var ArrayOutput := EncodeArray(ChildValue as TJSONArray, Options, IndentLevel + 1);
+      var ArrayOutput := EncodeArray(ChildValue as TJSONArray, Options, GetNestedLevel(IndentLevel));
       FoldedOutput := Indent + FoldedKey + ArrayOutput;
       Result := True;
       Exit;
@@ -514,7 +523,7 @@ begin
         if not IsValidIdentifier(Key) then
           QuotedKey := '"' + EscapeString(Key) + '"';
 
-        var ArrayOutput := EncodeArray(Value as TJSONArray, Options, IndentLevel + 1);
+        var ArrayOutput := EncodeArray(Value as TJSONArray, Options, GetNestedLevel(IndentLevel));
         Builder.Append(Indent).Append(QuotedKey).Append(ArrayOutput);
         IsFirst := False;
       end
@@ -551,12 +560,14 @@ begin
   if JsonValue is TJSONObject then
   begin
     Result := EncodeObject(JsonValue as TJSONObject, ActualOptions, 0);
+    Result := Result.TrimRight;
     Exit;
   end;
 
   if JsonValue is TJSONArray then
   begin
-    Result := EncodeArray(JsonValue as TJSONArray, ActualOptions, 0);
+    Result := EncodeArray(JsonValue as TJSONArray, ActualOptions, 0, True);
+    Result := Result.TrimRight;
     Exit;
   end;
 

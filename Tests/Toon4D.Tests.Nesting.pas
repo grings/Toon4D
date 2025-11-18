@@ -484,6 +484,7 @@ data[3]:
   - [0]:
   - [0]:
 '''.Trim;
+    Expected := TToonTestHelpers.NormalizeLineEndings(Expected);
 
     Assert.AreEqual(Expected, Result, 'Empty inner arrays should be encoded');
   finally
@@ -529,6 +530,7 @@ data[3]:
   - [2]: 2,3
   - [3]: 4,5,6
 '''.Trim;
+    Expected := TToonTestHelpers.NormalizeLineEndings(Expected);
 
     Assert.AreEqual(Expected, Result, 'Mixed-length inner arrays should be encoded');
   finally
