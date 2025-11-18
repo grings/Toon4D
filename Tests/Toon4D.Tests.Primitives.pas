@@ -156,12 +156,26 @@ type
 
     [Test]
     procedure ObjectKeyOrder_ShouldPreserveOrder;
+
+    [Test]
+    procedure StringOnlySpaces_ShouldQuote;
+
+    [Test]
+    procedure StringResemblingArrayHeader_ShouldQuote;
+
+    [Test]
+    procedure StringWithEmbeddedNewline_ShouldQuoteAndEscape;
+
+    [Test]
+    procedure StringWithEmbeddedQuote_ShouldEscape;
   end;
 
 implementation
 
 uses
-  Toon4D;
+  Toon4D,
+  Toon4D.Consts,
+  Toon4D.Tests.Helpers;
 
 procedure TPrimitivesTests.NumberZero_ShouldEncodeAsZero;
 var
@@ -734,7 +748,7 @@ active: true
 '''.Trim;
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Assert.AreEqual(Expected, ToonOutput);
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), ToonOutput);
   finally
     JsonObject.Free;
   end;
@@ -864,7 +878,7 @@ begin
     JsonObject.AddPair('third', 'value3');
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Lines := ToonOutput.Split([sLineBreak]);
+    Lines := ToonOutput.Split([ToonLineBreak]);
 
     Assert.AreEqual(3, Length(Lines));
     Assert.AreEqual('first: value1', Lines[0]);
@@ -888,12 +902,88 @@ begin
     JsonObject.AddPair('beta', '3');
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Lines := ToonOutput.Split([sLineBreak]);
+    Lines := ToonOutput.Split([ToonLineBreak]);
 
     Assert.AreEqual(3, Length(Lines));
     Assert.IsTrue(Lines[0].StartsWith('zebra:'));
     Assert.IsTrue(Lines[1].StartsWith('alpha:'));
     Assert.IsTrue(Lines[2].StartsWith('beta:'));
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TPrimitivesTests.StringOnlySpaces_ShouldQuote;
+var
+  JsonObject: TJSONObject;
+  Result: string;
+  Expected: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    JsonObject.AddPair('key', '   ');
+
+    Result := TToon.JsonToToon(JsonObject);
+
+    Expected := 'key: "   "';
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Result, 'String with only spaces must be quoted');
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TPrimitivesTests.StringResemblingArrayHeader_ShouldQuote;
+var
+  JsonObject: TJSONObject;
+  Result: string;
+  Expected: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    JsonObject.AddPair('key', '[2]');
+
+    Result := TToon.JsonToToon(JsonObject);
+
+    Expected := 'key: "[2]"';
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Result, 'String resembling array header must be quoted');
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TPrimitivesTests.StringWithEmbeddedNewline_ShouldQuoteAndEscape;
+var
+  JsonObject: TJSONObject;
+  Result: string;
+  Expected: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    JsonObject.AddPair('key', 'line1'#10'line2');
+
+    Result := TToon.JsonToToon(JsonObject);
+
+    Expected := 'key: "line1\nline2"';
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Result, 'String with embedded newline must be quoted and escaped');
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TPrimitivesTests.StringWithEmbeddedQuote_ShouldEscape;
+var
+  JsonObject: TJSONObject;
+  Result: string;
+  Expected: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    JsonObject.AddPair('key', 'say "hello"');
+
+    Result := TToon.JsonToToon(JsonObject);
+
+    Expected := 'key: "say \"hello\""';
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Result, 'String with embedded quote must be escaped');
   finally
     JsonObject.Free;
   end;

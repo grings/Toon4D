@@ -25,6 +25,7 @@ type
     class function EncodeObject(JsonObject: TJSONObject; Options: TToonOptions; IndentLevel: Integer = 0): string; static;
     class function EncodePrimitive(JsonValue: TJSONValue; Options: TToonOptions): string; static;
     class function GetIndent(Options: TToonOptions; Level: Integer): string; static;
+    class function GetArrayContentLevel(IndentLevel: Integer): Integer; static;
     class function HasKeyFoldingCollision(ParentObject: TJSONObject; const StartKey: string; NestedObject: TJSONObject): Boolean; static;
     class function TryFoldKey(ParentObject: TJSONObject; const Key: string; Value: TJSONObject; Options: TToonOptions; IndentLevel: Integer; out FoldedOutput: string): Boolean; static;
     class function EncodeArray(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer): string; static;
@@ -117,6 +118,13 @@ begin
     SpaceCount := 4;
 
   Result := StringOfChar(' ', SpaceCount * Level);
+end;
+
+class function TToon.GetArrayContentLevel(IndentLevel: Integer): Integer;
+begin
+  Result := IndentLevel;
+  if Result = 0 then
+    Result := 1;
 end;
 
 class function TToon.GetDelimiter(Options: TToonOptions): Char;
@@ -214,14 +222,18 @@ begin
       begin
         if I > 0 then
           Builder.Append(Delimiter);
-        Builder.Append(FieldNames[I]);
+        var FieldName := FieldNames[I];
+        if not IsValidIdentifier(FieldName) then
+          Builder.Append('"').Append(EscapeString(FieldName)).Append('"')
+        else
+          Builder.Append(FieldName);
       end;
       Builder.Append('}:');
 
-      var Indent := GetIndent(Options, IndentLevel);
+      var Indent := GetIndent(Options, GetArrayContentLevel(IndentLevel));
       for var I := 0 to JsonArray.Count - 1 do
       begin
-        Builder.AppendLine;
+        Builder.Append(ToonLineBreak);
         Builder.Append(Indent);
         var Obj := JsonArray.Items[I] as TJSONObject;
         for var J := 0 to FieldNames.Count - 1 do
@@ -248,7 +260,7 @@ begin
   var Builder := TStringBuilder.Create;
   try
     Builder.Append(LengthPrefix).Append(':');
-    var Indent := GetIndent(Options, IndentLevel);
+    var Indent := GetIndent(Options, GetArrayContentLevel(IndentLevel));
 
     for var I := 0 to JsonArray.Count - 1 do
     begin
@@ -258,15 +270,15 @@ begin
 
       if Item is TJSONObject then
       begin
-        var ObjContent := EncodeObject(Item as TJSONObject, Options);
-        var Lines := ObjContent.Split([sLineBreak]);
+        var ObjContent := EncodeObject(Item as TJSONObject, Options, 0);
+        var Lines := ObjContent.Split([ToonLineBreak]);
         for var J := 0 to High(Lines) do
         begin
           if J = 0 then
             Builder.Append(Lines[J])
           else
           begin
-            Builder.AppendLine;
+            Builder.Append(ToonLineBreak);
             Builder.Append(Indent).Append('  ').Append(Lines[J]);
           end;
         end;
@@ -440,7 +452,7 @@ begin
   var NestedObj := EncodeObject(CurrentObj, Options, IndentLevel + 1);
   FoldedOutput := Indent + FoldedKey + ':';
   if NestedObj <> '' then
-    FoldedOutput := FoldedOutput + sLineBreak + NestedObj;
+    FoldedOutput := FoldedOutput + ToonLineBreak + NestedObj;
   Result := True;
 end;
 
@@ -471,7 +483,7 @@ begin
         if TryFoldKey(JsonObject, Key, NestedObject, Options, IndentLevel, FoldedResult) then
         begin
           if not IsFirst then
-            Builder.AppendLine;
+            Builder.Append(ToonLineBreak);
           Builder.Append(FoldedResult);
           IsFirst := False;
         end
@@ -485,9 +497,9 @@ begin
           if NestedObj <> '' then
           begin
             if not IsFirst then
-              Builder.AppendLine;
+              Builder.Append(ToonLineBreak);
             Builder.Append(Indent).Append(QuotedKey).Append(':');
-            Builder.AppendLine;
+            Builder.Append(ToonLineBreak);
             Builder.Append(NestedObj);
             IsFirst := False;
           end;
@@ -496,7 +508,7 @@ begin
       else if Value is TJSONArray then
       begin
         if not IsFirst then
-          Builder.AppendLine;
+          Builder.Append(ToonLineBreak);
 
         var QuotedKey := Key;
         if not IsValidIdentifier(Key) then
@@ -509,7 +521,7 @@ begin
       else
       begin
         if not IsFirst then
-          Builder.AppendLine;
+          Builder.Append(ToonLineBreak);
 
         var QuotedKey := Key;
         if not IsValidIdentifier(Key) then

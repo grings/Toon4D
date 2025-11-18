@@ -63,6 +63,21 @@ type
 
     [Test]
     procedure NestedArrays_CanHaveDifferentDelimiters;
+
+    [Test]
+    procedure CommaNotQuotedWhenTabDelimiter;
+
+    [Test]
+    procedure CommaNotQuotedWhenPipeDelimiter;
+
+    [Test]
+    procedure TabOnlyQuotedWhenTabDelimiter;
+
+    [Test]
+    procedure PipeOnlyQuotedWhenPipeDelimiter;
+
+    [Test]
+    procedure TabularValueWithDelimiter_ShouldQuote;
   end;
 
 implementation
@@ -453,6 +468,164 @@ begin
 
     Assert.Contains(ToonOutput, 'items[1]:');
     Assert.Contains(ToonOutput, '- [2]: a,b');
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TDelimiterTests.CommaNotQuotedWhenTabDelimiter;
+var
+  JsonObject: TJSONObject;
+  JsonArray: TJSONArray;
+  Options: TToonOptions;
+  ToonOutput: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    JsonArray := TJSONArray.Create;
+    JsonArray.Add('a,b');  // Contains comma
+    JsonArray.Add('c');
+    JsonObject.AddPair('items', JsonArray);
+
+    Options := [TToonOption.DelimiterTab];  // Tab is delimiter, not comma
+    ToonOutput := TToon.JsonToToon(JsonObject, Options);
+
+    // Comma should NOT be quoted when tab is the delimiter
+    Assert.Contains(ToonOutput, 'a,b');  // Unquoted
+    Assert.IsFalse(ToonOutput.Contains('"a,b"'), 'Comma should not be quoted when tab is delimiter');
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TDelimiterTests.CommaNotQuotedWhenPipeDelimiter;
+var
+  JsonObject: TJSONObject;
+  JsonArray: TJSONArray;
+  Options: TToonOptions;
+  ToonOutput: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    JsonArray := TJSONArray.Create;
+    JsonArray.Add('a,b');  // Contains comma
+    JsonArray.Add('c');
+    JsonObject.AddPair('items', JsonArray);
+
+    Options := [TToonOption.DelimiterPipe];  // Pipe is delimiter, not comma
+    ToonOutput := TToon.JsonToToon(JsonObject, Options);
+
+    // Comma should NOT be quoted when pipe is the delimiter
+    Assert.Contains(ToonOutput, 'a,b');  // Unquoted
+    Assert.IsFalse(ToonOutput.Contains('"a,b"'), 'Comma should not be quoted when pipe is delimiter');
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TDelimiterTests.TabOnlyQuotedWhenTabDelimiter;
+var
+  JsonObject: TJSONObject;
+  JsonArray: TJSONArray;
+  Options: TToonOptions;
+  ToonOutput: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    // Test 1: Tab character when tab is NOT the delimiter (should escape in string)
+    JsonArray := TJSONArray.Create;
+    JsonArray.Add('a' + #9 + 'b');
+    JsonObject.AddPair('items', JsonArray);
+
+    Options := [TToonOption.DelimiterComma];  // Comma delimiter
+    ToonOutput := TToon.JsonToToon(JsonObject, Options);
+
+    // Tab should be escaped but not necessarily quoted (unless other quoting rules apply)
+    Assert.Contains(ToonOutput, '\t', 'Tab should be escaped');
+
+    JsonObject.Free;
+    JsonObject := TJSONObject.Create;
+
+    // Test 2: Tab character when tab IS the delimiter (must quote)
+    JsonArray := TJSONArray.Create;
+    JsonArray.Add('a' + #9 + 'b');
+    JsonArray.Add('c');
+    JsonObject.AddPair('items', JsonArray);
+
+    Options := [TToonOption.DelimiterTab];  // Tab delimiter
+    ToonOutput := TToon.JsonToToon(JsonObject, Options);
+
+    // Tab must be quoted and escaped when it's the active delimiter
+    Assert.Contains(ToonOutput, '"a\tb"', 'Tab must be quoted when tab is delimiter');
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TDelimiterTests.PipeOnlyQuotedWhenPipeDelimiter;
+var
+  JsonObject: TJSONObject;
+  JsonArray: TJSONArray;
+  Options: TToonOptions;
+  ToonOutput: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    // Test 1: Pipe character when pipe is NOT the delimiter
+    JsonArray := TJSONArray.Create;
+    JsonArray.Add('a|b');
+    JsonObject.AddPair('items', JsonArray);
+
+    Options := [TToonOption.DelimiterComma];  // Comma delimiter
+    ToonOutput := TToon.JsonToToon(JsonObject, Options);
+
+    // Pipe should NOT be quoted when comma is the delimiter
+    Assert.Contains(ToonOutput, 'a|b');
+    Assert.IsFalse(ToonOutput.Contains('"a|b"'), 'Pipe should not be quoted when comma is delimiter');
+
+    JsonObject.Free;
+    JsonObject := TJSONObject.Create;
+
+    // Test 2: Pipe character when pipe IS the delimiter (must quote)
+    JsonArray := TJSONArray.Create;
+    JsonArray.Add('a|b');
+    JsonArray.Add('c');
+    JsonObject.AddPair('items', JsonArray);
+
+    Options := [TToonOption.DelimiterPipe];  // Pipe delimiter
+    ToonOutput := TToon.JsonToToon(JsonObject, Options);
+
+    // Pipe must be quoted when it's the active delimiter
+    Assert.Contains(ToonOutput, '"a|b"', 'Pipe must be quoted when pipe is delimiter');
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TDelimiterTests.TabularValueWithDelimiter_ShouldQuote;
+var
+  JsonObject: TJSONObject;
+  JsonArray: TJSONArray;
+  Item: TJSONObject;
+  Options: TToonOptions;
+  ToonOutput: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    JsonArray := TJSONArray.Create;
+
+    Item := TJSONObject.Create;
+    Item.AddPair('id', TJSONNumber.Create(1));
+    Item.AddPair('name', 'Smith,John');  // Name contains comma
+    JsonArray.Add(Item);
+
+    JsonObject.AddPair('users', JsonArray);
+
+    Options := [TToonOption.DelimiterComma];
+    ToonOutput := TToon.JsonToToon(JsonObject, Options);
+
+    // The name value must be quoted because it contains the active delimiter
+    Assert.Contains(ToonOutput, '"Smith,John"');
   finally
     JsonObject.Free;
   end;

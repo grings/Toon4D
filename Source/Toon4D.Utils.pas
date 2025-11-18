@@ -21,11 +21,23 @@ function NeedsQuoting(const Value: string; Delimiter: Char): Boolean;
 function EscapeString(const Value: string): string;
 function NormalizeNumber(JsonNumber: TJSONNumber): string;
 function IsValidIdentifier(const KeyName: string): Boolean;
+function LooksLikeNumber(const Value: string): Boolean;
+function IsReservedWord(const Value: string): Boolean;
 
 implementation
 
 uses
   System.Math;
+
+function LooksLikeNumber(const Value: string): Boolean;
+begin
+  Result := TRegEx.IsMatch(Value, '^-?\d+(\.\d+)?([eE][+-]?\d+)?$');
+end;
+
+function IsReservedWord(const Value: string): Boolean;
+begin
+  Result := Value.Equals('true') or Value.Equals('false') or Value.Equals('null');
+end;
 
 function NeedsQuoting(const Value: string; Delimiter: Char): Boolean;
 begin
@@ -43,21 +55,19 @@ begin
     Exit;
   end;
 
-  if Value.Equals('true') or Value.Equals('false') or Value.Equals('null') then
+  if IsReservedWord(Value) then
   begin
     Result := True;
     Exit;
   end;
 
-  if Value.StartsWith('- ') then
+  if (Value = '-') or Value.StartsWith('- ') then
   begin
     Result := True;
     Exit;
   end;
 
-  // Quote if it looks like a number pattern to avoid ambiguity
-  var LooksLikeNumber := TRegEx.IsMatch(Value, '^-?\d+(\.\d+)?([eE][+-]?\d+)?$');
-  if LooksLikeNumber then
+  if LooksLikeNumber(Value) then
   begin
     Result := True;
     Exit;
@@ -120,14 +130,28 @@ begin
 
   if Frac(DoubleValue) = 0 then
   begin
-    var IntValue := Trunc(DoubleValue);
-    Result := IntValue.ToString;
-    Exit;
+    if (DoubleValue >= Low(Int64)) and (DoubleValue <= High(Int64)) then
+    begin
+      var IntValue := Trunc(DoubleValue);
+      Result := IntValue.ToString;
+      Exit;
+    end
+    else
+    begin
+      Result := Format('%.0f', [DoubleValue]);
+      Result := StringReplace(Result, ',', '.', [rfReplaceAll]);
+      Exit;
+    end;
   end;
 
   var StringValue := FloatToStr(DoubleValue);
-
   StringValue := StringReplace(StringValue, ',', '.', [rfReplaceAll]);
+
+  if StringValue.Contains('E') or StringValue.Contains('e') then
+  begin
+    StringValue := FloatToStrF(DoubleValue, ffFixed, 18, 18);
+    StringValue := StringReplace(StringValue, ',', '.', [rfReplaceAll]);
+  end;
 
   if StringValue.Contains('.') then
   begin
@@ -146,14 +170,13 @@ begin
     Exit;
   end;
 
-  if KeyName.Equals('true') or KeyName.Equals('false') or KeyName.Equals('null') then
+  if IsReservedWord(KeyName) then
   begin
     Result := False;
     Exit;
   end;
 
-  var LooksLikeNumber := TRegEx.IsMatch(KeyName, '^-?\d+(\.\d+)?$');
-  if LooksLikeNumber then
+  if LooksLikeNumber(KeyName) then
   begin
     Result := False;
     Exit;

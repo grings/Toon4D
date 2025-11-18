@@ -105,12 +105,41 @@ type
 
     [Test]
     procedure ArrayLengthDeclaration_ShouldMatchActualCount;
+
+    [Test]
+    procedure TabularFieldOrder_FromFirstObject;
+
+    [Test]
+    procedure TabularSingleField_OnHyphenLine;
+
+    [Test]
+    procedure ArraysOfOnlyArrays_ListFormat;
+
+    [Test]
+    procedure MultipleArrayFields_ListFormat;
+
+    [Test]
+    procedure EmptyArrayFirst_OnHyphenLine;
+
+    [Test]
+    procedure ArraysOfArrays_MatrixFormat;
+
+    [Test]
+    procedure ArrayFirstField_InTabular;
+
+    [Test]
+    procedure PrimitiveFirstField_InTabular;
+
+    [Test]
+    procedure TabularArrayWithMixedArrayFields_ShouldUseListFormat;
   end;
 
 implementation
 
 uses
-  Toon4D;
+  Toon4D,
+  Toon4D.Consts,
+  Toon4D.Tests.Helpers;
 
 procedure TArrayTests.ArrayEmpty_ShouldEncodeWithZeroLength;
 var
@@ -344,7 +373,7 @@ users[1]{id,name}:
 '''.Trim;
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Assert.AreEqual(Expected, ToonOutput);
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), ToonOutput);
   finally
     JsonObject.Free;
   end;
@@ -389,7 +418,7 @@ users[3]{id,name}:
 '''.Trim;
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Assert.AreEqual(Expected, ToonOutput);
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), ToonOutput);
   finally
     JsonObject.Free;
   end;
@@ -602,7 +631,7 @@ items[2]:
 '''.Trim;
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Assert.AreEqual(Expected, ToonOutput);
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), ToonOutput);
   finally
     JsonObject.Free;
   end;
@@ -640,7 +669,7 @@ pairs[2]:
 '''.Trim;
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Assert.AreEqual(Expected, ToonOutput);
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), ToonOutput);
   finally
     JsonObject.Free;
   end;
@@ -691,7 +720,7 @@ items[1]{id,name}:
 '''.Trim;
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Assert.AreEqual(Expected, ToonOutput);
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), ToonOutput);
   finally
     JsonObject.Free;
   end;
@@ -723,7 +752,7 @@ items[1]{id,name,role}:
 '''.Trim;
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Assert.AreEqual(Expected, ToonOutput);
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), ToonOutput);
   finally
     JsonObject.Free;
   end;
@@ -827,7 +856,7 @@ begin
     JsonObject.AddPair('items', JsonArray);
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Lines := ToonOutput.Split([sLineBreak]);
+    Lines := ToonOutput.Split([ToonLineBreak]);
 
     Assert.AreEqual('name: group', Lines[0]);
     Assert.AreEqual('items[2]: item1,item2', Lines[1]);
@@ -887,6 +916,302 @@ begin
 
     ToonOutput := TToon.JsonToToon(JsonObject);
     Assert.Contains(ToonOutput, 'numbers[10]:');
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TArrayTests.TabularFieldOrder_FromFirstObject;
+var
+  JsonObject: TJSONObject;
+  JsonArray: TJSONArray;
+  Item1: TJSONObject;
+  Item2: TJSONObject;
+  ToonOutput: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    JsonArray := TJSONArray.Create;
+
+    Item1 := TJSONObject.Create;
+    Item1.AddPair('zebra', 'z1');
+    Item1.AddPair('alpha', 'a1');
+    Item1.AddPair('beta', 'b1');
+    JsonArray.Add(Item1);
+
+    Item2 := TJSONObject.Create;
+    Item2.AddPair('zebra', 'z2');
+    Item2.AddPair('alpha', 'a2');
+    Item2.AddPair('beta', 'b2');
+    JsonArray.Add(Item2);
+
+    JsonObject.AddPair('items', JsonArray);
+    ToonOutput := TToon.JsonToToon(JsonObject);
+
+    Assert.Contains(ToonOutput, '{zebra,alpha,beta}:');
+    Assert.IsFalse(ToonOutput.Contains('{alpha,beta,zebra}:'));
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TArrayTests.TabularSingleField_OnHyphenLine;
+var
+  JsonObject: TJSONObject;
+  JsonArray: TJSONArray;
+  Item: TJSONObject;
+  ToonOutput: string;
+  Expected: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    JsonArray := TJSONArray.Create;
+
+    Item := TJSONObject.Create;
+    Item.AddPair('value', 'single');
+    JsonArray.Add(Item);
+
+    JsonObject.AddPair('items', JsonArray);
+
+    Expected := '''
+items[1]{value}:
+  single
+'''.Trim;
+
+    ToonOutput := TToon.JsonToToon(JsonObject);
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), ToonOutput);
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TArrayTests.ArraysOfOnlyArrays_ListFormat;
+var
+  JsonObject: TJSONObject;
+  JsonArray: TJSONArray;
+  Inner1: TJSONArray;
+  Inner2: TJSONArray;
+  ToonOutput: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    JsonArray := TJSONArray.Create;
+
+    Inner1 := TJSONArray.Create;
+    Inner1.Add('a');
+    Inner1.Add('b');
+    JsonArray.AddElement(Inner1);
+
+    Inner2 := TJSONArray.Create;
+    Inner2.Add('c');
+    JsonArray.AddElement(Inner2);
+
+    JsonObject.AddPair('data', JsonArray);
+    ToonOutput := TToon.JsonToToon(JsonObject);
+
+    Assert.Contains(ToonOutput, 'data[2]:');
+    Assert.Contains(ToonOutput, '- [2]: a,b');
+    Assert.Contains(ToonOutput, '- [1]: c');
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TArrayTests.MultipleArrayFields_ListFormat;
+var
+  JsonObject: TJSONObject;
+  JsonArray: TJSONArray;
+  Item: TJSONObject;
+  SubArray1: TJSONArray;
+  SubArray2: TJSONArray;
+  ToonOutput: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    JsonArray := TJSONArray.Create;
+
+    Item := TJSONObject.Create;
+    Item.AddPair('id', TJSONNumber.Create(1));
+
+    SubArray1 := TJSONArray.Create;
+    SubArray1.Add('tag1');
+    Item.AddPair('tags', SubArray1);
+
+    SubArray2 := TJSONArray.Create;
+    SubArray2.Add('role1');
+    Item.AddPair('roles', SubArray2);
+
+    JsonArray.Add(Item);
+    JsonObject.AddPair('items', JsonArray);
+
+    ToonOutput := TToon.JsonToToon(JsonObject);
+
+    Assert.Contains(ToonOutput, 'items[1]:');
+    Assert.Contains(ToonOutput, '- id: 1');
+    Assert.IsFalse(ToonOutput.Contains('{id,tags,roles}:'));
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TArrayTests.EmptyArrayFirst_OnHyphenLine;
+var
+  JsonObject: TJSONObject;
+  JsonArray: TJSONArray;
+  EmptyArray: TJSONArray;
+  ToonOutput: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    JsonArray := TJSONArray.Create;
+
+    EmptyArray := TJSONArray.Create;
+    JsonArray.AddElement(EmptyArray);
+
+    JsonArray.Add('text');
+
+    JsonObject.AddPair('items', JsonArray);
+    ToonOutput := TToon.JsonToToon(JsonObject);
+
+    Assert.Contains(ToonOutput, '- [0]:');
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TArrayTests.ArraysOfArrays_MatrixFormat;
+var
+  JsonObject: TJSONObject;
+  OuterArray: TJSONArray;
+  Row1: TJSONArray;
+  Row2: TJSONArray;
+  Row3: TJSONArray;
+  ToonOutput: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    OuterArray := TJSONArray.Create;
+
+    Row1 := TJSONArray.Create;
+    Row1.AddElement(TJSONNumber.Create(1));
+    Row1.AddElement(TJSONNumber.Create(2));
+    Row1.AddElement(TJSONNumber.Create(3));
+    OuterArray.AddElement(Row1);
+
+    Row2 := TJSONArray.Create;
+    Row2.AddElement(TJSONNumber.Create(4));
+    Row2.AddElement(TJSONNumber.Create(5));
+    Row2.AddElement(TJSONNumber.Create(6));
+    OuterArray.AddElement(Row2);
+
+    Row3 := TJSONArray.Create;
+    Row3.AddElement(TJSONNumber.Create(7));
+    Row3.AddElement(TJSONNumber.Create(8));
+    Row3.AddElement(TJSONNumber.Create(9));
+    OuterArray.AddElement(Row3);
+
+    JsonObject.AddPair('matrix', OuterArray);
+    ToonOutput := TToon.JsonToToon(JsonObject);
+
+    Assert.Contains(ToonOutput, 'matrix[3]:');
+    Assert.Contains(ToonOutput, '- [3]: 1,2,3');
+    Assert.Contains(ToonOutput, '- [3]: 4,5,6');
+    Assert.Contains(ToonOutput, '- [3]: 7,8,9');
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TArrayTests.ArrayFirstField_InTabular;
+var
+  JsonObject: TJSONObject;
+  JsonArray: TJSONArray;
+  Item: TJSONObject;
+  SubArray: TJSONArray;
+  ToonOutput: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    JsonArray := TJSONArray.Create;
+
+    Item := TJSONObject.Create;
+
+    SubArray := TJSONArray.Create;
+    SubArray.Add('a');
+    SubArray.Add('b');
+    Item.AddPair('tags', SubArray);
+
+    Item.AddPair('name', 'test');
+
+    JsonArray.Add(Item);
+    JsonObject.AddPair('items', JsonArray);
+
+    ToonOutput := TToon.JsonToToon(JsonObject);
+
+    Assert.Contains(ToonOutput, 'items[1]:');
+    Assert.IsFalse(ToonOutput.Contains('{tags,name}:'));
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TArrayTests.PrimitiveFirstField_InTabular;
+var
+  JsonObject: TJSONObject;
+  JsonArray: TJSONArray;
+  Item: TJSONObject;
+  ToonOutput: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    JsonArray := TJSONArray.Create;
+
+    Item := TJSONObject.Create;
+    Item.AddPair('id', TJSONNumber.Create(1));
+    Item.AddPair('name', 'Alice');
+    Item.AddPair('age', TJSONNumber.Create(30));
+    JsonArray.Add(Item);
+
+    JsonObject.AddPair('users', JsonArray);
+    ToonOutput := TToon.JsonToToon(JsonObject);
+
+    Assert.Contains(ToonOutput, '{id,name,age}:');
+    Assert.Contains(ToonOutput, '1,Alice,30');
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TArrayTests.TabularArrayWithMixedArrayFields_ShouldUseListFormat;
+var
+  JsonObject: TJSONObject;
+  JsonArray: TJSONArray;
+  Item1: TJSONObject;
+  Item2: TJSONObject;
+  SubArray: TJSONArray;
+  ToonOutput: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    JsonArray := TJSONArray.Create;
+
+    Item1 := TJSONObject.Create;
+    Item1.AddPair('id', TJSONNumber.Create(1));
+    SubArray := TJSONArray.Create;
+    SubArray.Add('tag1');
+    Item1.AddPair('tags', SubArray);
+    JsonArray.Add(Item1);
+
+    Item2 := TJSONObject.Create;
+    Item2.AddPair('id', TJSONNumber.Create(2));
+    Item2.AddPair('name', 'test');
+    JsonArray.Add(Item2);
+
+    JsonObject.AddPair('items', JsonArray);
+    ToonOutput := TToon.JsonToToon(JsonObject);
+
+    Assert.Contains(ToonOutput, 'items[2]:');
+    Assert.Contains(ToonOutput, '- id:');
   finally
     JsonObject.Free;
   end;

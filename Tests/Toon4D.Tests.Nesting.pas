@@ -57,13 +57,24 @@ type
 
     [Test]
     procedure ListArrayWithNestedObjects_ShouldIndentProperly;
+
+    [Test]
+    procedure EmptyInnerArrays_ShouldEncode;
+
+    [Test]
+    procedure MixedLengthInnerArrays_ShouldEncode;
+
+    [Test]
+    procedure StringsWithDelimitersInNested_ShouldQuote;
   end;
 
 implementation
 
 uses
   Toon4D,
-  Toon4D.Types;
+  Toon4D.Consts,
+  Toon4D.Types,
+  Toon4D.Tests.Helpers;
 
 procedure TNestingTests.NestedObjectSingleLevel_ShouldIndentTwoSpaces;
 var
@@ -84,7 +95,7 @@ address:
 '''.Trim;
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Assert.AreEqual(Expected, ToonOutput);
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), ToonOutput);
   finally
     JsonObject.Free;
   end;
@@ -113,7 +124,7 @@ data:
 '''.Trim;
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Assert.AreEqual(Expected, ToonOutput);
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), ToonOutput);
   finally
     JsonObject.Free;
   end;
@@ -139,7 +150,7 @@ begin
     JsonObject.AddPair('level1', Level1);
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Lines := ToonOutput.Split([sLineBreak]);
+    Lines := ToonOutput.Split([ToonLineBreak]);
 
     Assert.AreEqual('level1:', Lines[0]);
     Assert.AreEqual('  level2:', Lines[1]);
@@ -177,7 +188,7 @@ active: true
 '''.Trim;
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Assert.AreEqual(Expected, ToonOutput);
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), ToonOutput);
   finally
     JsonObject.Free;
   end;
@@ -206,7 +217,7 @@ permissions:
 '''.Trim;
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Assert.AreEqual(Expected, ToonOutput);
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), ToonOutput);
   finally
     JsonObject.Free;
   end;
@@ -268,7 +279,7 @@ begin
     JsonObject.AddPair('a', Level1);
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Lines := ToonOutput.Split([sLineBreak]);
+    Lines := ToonOutput.Split([ToonLineBreak]);
 
     Assert.AreEqual('a:', Lines[0]);
     Assert.AreEqual('  b:', Lines[1]);
@@ -395,7 +406,7 @@ nested:
 '''.Trim;
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Assert.AreEqual(Expected, ToonOutput);
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), ToonOutput);
   finally
     JsonObject.Free;
   end;
@@ -436,6 +447,118 @@ begin
     Assert.Contains(ToonOutput, '  - id: 1');
     Assert.Contains(ToonOutput, '    coords:');
     Assert.Contains(ToonOutput, '      x: 10');
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TNestingTests.EmptyInnerArrays_ShouldEncode;
+var
+  JsonObject: TJSONObject;
+  OuterArray: TJSONArray;
+  EmptyArray1: TJSONArray;
+  EmptyArray2: TJSONArray;
+  EmptyArray3: TJSONArray;
+  Result: string;
+  Expected: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    OuterArray := TJSONArray.Create;
+
+    EmptyArray1 := TJSONArray.Create;
+    OuterArray.AddElement(EmptyArray1);
+
+    EmptyArray2 := TJSONArray.Create;
+    OuterArray.AddElement(EmptyArray2);
+
+    EmptyArray3 := TJSONArray.Create;
+    OuterArray.AddElement(EmptyArray3);
+
+    JsonObject.AddPair('data', OuterArray);
+    Result := TToon.JsonToToon(JsonObject);
+
+    Expected := '''
+data[3]:
+  - [0]:
+  - [0]:
+  - [0]:
+'''.Trim;
+
+    Assert.AreEqual(Expected, Result, 'Empty inner arrays should be encoded');
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TNestingTests.MixedLengthInnerArrays_ShouldEncode;
+var
+  JsonObject: TJSONObject;
+  OuterArray: TJSONArray;
+  Array1: TJSONArray;
+  Array2: TJSONArray;
+  Array3: TJSONArray;
+  Result: string;
+  Expected: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    OuterArray := TJSONArray.Create;
+
+    Array1 := TJSONArray.Create;
+    Array1.AddElement(TJSONNumber.Create(1));
+    OuterArray.AddElement(Array1);
+
+    Array2 := TJSONArray.Create;
+    Array2.AddElement(TJSONNumber.Create(2));
+    Array2.AddElement(TJSONNumber.Create(3));
+    OuterArray.AddElement(Array2);
+
+    Array3 := TJSONArray.Create;
+    Array3.AddElement(TJSONNumber.Create(4));
+    Array3.AddElement(TJSONNumber.Create(5));
+    Array3.AddElement(TJSONNumber.Create(6));
+    OuterArray.AddElement(Array3);
+
+    JsonObject.AddPair('data', OuterArray);
+    Result := TToon.JsonToToon(JsonObject);
+
+    Expected := '''
+data[3]:
+  - [1]: 1
+  - [2]: 2,3
+  - [3]: 4,5,6
+'''.Trim;
+
+    Assert.AreEqual(Expected, Result, 'Mixed-length inner arrays should be encoded');
+  finally
+    JsonObject.Free;
+  end;
+end;
+
+procedure TNestingTests.StringsWithDelimitersInNested_ShouldQuote;
+var
+  JsonObject: TJSONObject;
+  NestedObject: TJSONObject;
+  JsonArray: TJSONArray;
+  Options: TToonOptions;
+  Result: string;
+begin
+  JsonObject := TJSONObject.Create;
+  try
+    NestedObject := TJSONObject.Create;
+
+    JsonArray := TJSONArray.Create;
+    JsonArray.Add('a,b');
+    JsonArray.Add('c');
+    NestedObject.AddPair('items', JsonArray);
+
+    JsonObject.AddPair('data', NestedObject);
+
+    Options := [TToonOption.DelimiterComma];
+    Result := TToon.JsonToToon(JsonObject, Options);
+
+    Assert.Contains(Result, '"a,b"', 'String with delimiter should be quoted in nested context');
   finally
     JsonObject.Free;
   end;

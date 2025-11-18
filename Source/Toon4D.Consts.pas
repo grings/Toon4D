@@ -12,6 +12,9 @@ unit Toon4D.Consts;
 
 interface
 
+const
+  ToonLineBreak = #10;
+
 resourcestring
   ErrorInvalidJson = 'Invalid JSON input: %s';
   ErrorNilJsonValue = 'JSON value cannot be nil';

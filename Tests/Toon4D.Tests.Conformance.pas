@@ -171,7 +171,8 @@ implementation
 
 uses
   Toon4D,
-  Toon4D.Types;
+  Toon4D.Types,
+  Toon4D.Tests.Helpers;
 
 procedure TConformanceTests.PrimitiveString_ShouldMatchExpected;
 var
@@ -182,7 +183,7 @@ begin
   JsonInput := '"hello"';
   Expected := 'hello';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.PrimitiveNumber_ShouldMatchExpected;
@@ -194,7 +195,7 @@ begin
   JsonInput := '42';
   Expected := '42';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.PrimitiveBoolean_ShouldMatchExpected;
@@ -206,7 +207,7 @@ begin
   JsonInput := 'true';
   Expected := 'true';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.PrimitiveNull_ShouldMatchExpected;
@@ -218,7 +219,7 @@ begin
   JsonInput := 'null';
   Expected := 'null';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.SimpleObject_ShouldMatchExpected;
@@ -233,7 +234,7 @@ name: Alice
 age: 30
 '''.Trim;
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.NestedObject_ShouldMatchExpected;
@@ -249,7 +250,7 @@ user:
   age: 30
 '''.Trim;
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.ArrayPrimitive_ShouldMatchExpected;
@@ -261,7 +262,7 @@ begin
   JsonInput := '{"tags":["admin","ops","dev"]}';
   Expected := 'tags[3]: admin,ops,dev';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.ArrayTabular_ShouldMatchExpected;
@@ -277,7 +278,7 @@ users[2]{id,name}:
   2,Bob
 '''.Trim;
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.ArrayList_ShouldMatchExpected;
@@ -294,7 +295,7 @@ items[3]:
   - text
 '''.Trim;
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.ArrayEmpty_ShouldMatchExpected;
@@ -306,7 +307,7 @@ begin
   JsonInput := '{"items":[]}';
   Expected := 'items[0]:';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.ArrayNested_ShouldMatchExpected;
@@ -322,7 +323,7 @@ matrix[2]:
   - [2]: 3,4
 '''.Trim;
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.DelimiterComma_ShouldMatchExpected;
@@ -336,7 +337,7 @@ begin
   Expected := 'items[3]: a,b,c';
   Options := [TToonOption.DelimiterComma];
   Actual := TToon.JsonToToon(JsonInput, Options);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.DelimiterTab_ShouldMatchExpected;
@@ -363,7 +364,7 @@ begin
   Expected := 'items[3|]: a|b|c';
   Options := [TToonOption.DelimiterPipe];
   Actual := TToon.JsonToToon(JsonInput, Options);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.KeyFoldingSafe_ShouldMatchExpected;
@@ -377,7 +378,7 @@ begin
   Expected := 'data.metadata.version: 1.0';
   Options := [TToonOption.KeyFoldingSafe];
   Actual := TToon.JsonToToon(JsonInput, Options);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.KeyFoldingAggressive_ShouldMatchExpected;
@@ -401,7 +402,7 @@ begin
   JsonInput := '{"text":""}';
   Expected := 'text: ""';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.QuotingWhitespace_ShouldMatchExpected;
@@ -413,7 +414,7 @@ begin
   JsonInput := '{"text":" hello "}';
   Expected := 'text: " hello "';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.QuotingReserved_ShouldMatchExpected;
@@ -425,7 +426,7 @@ begin
   JsonInput := '{"value":"true"}';
   Expected := 'value: "true"';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.QuotingNumeric_ShouldMatchExpected;
@@ -437,7 +438,7 @@ begin
   JsonInput := '{"code":"123"}';
   Expected := 'code: "123"';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.QuotingSpecialChars_ShouldMatchExpected;
@@ -449,7 +450,7 @@ begin
   JsonInput := '{"url":"http://example.com"}';
   Expected := 'url: "http://example.com"';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.EscapeSequences_ShouldMatchExpected;
@@ -463,7 +464,7 @@ begin
     JsonObject.AddPair('text', 'line1'#10'line2'#9'tab"quote\backslash');
     Expected := 'text: "line1\nline2\ttab\"quote\\backslash"';
     Actual := TToon.JsonToToon(JsonObject);
-    Assert.AreEqual(Expected, Actual);
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
   finally
     JsonObject.Free;
   end;
@@ -478,7 +479,7 @@ begin
   JsonInput := '{"value":5.0}';
   Expected := 'value: 5';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.NumberNegativeZero_ShouldMatchExpected;
@@ -490,7 +491,7 @@ begin
   JsonInput := '{"value":-0.0}';
   Expected := 'value: 0';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.NumberTrailingZeros_ShouldMatchExpected;
@@ -502,7 +503,7 @@ begin
   JsonInput := '{"value":3.14000}';
   Expected := 'value: 3.14';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.NumberScientificNotation_ShouldMatchExpected;
@@ -514,7 +515,7 @@ begin
   JsonInput := '{"value":1.5e3}';
   Expected := 'value: 1500';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.IndentationTwoSpaces_ShouldMatchExpected;
@@ -531,7 +532,7 @@ outer:
 '''.Trim;
   Options := [TToonOption.Indent2Spaces];
   Actual := TToon.JsonToToon(JsonInput, Options);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.IndentationFourSpaces_ShouldMatchExpected;
@@ -548,7 +549,7 @@ outer:
 '''.Trim;
   Options := [TToonOption.Indent4Spaces];
   Actual := TToon.JsonToToon(JsonInput, Options);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.WhitespaceNoTrailing_ShouldMatchExpected;
@@ -576,7 +577,7 @@ begin
   JsonInput := '{"user_name":"Alice"}';
   Expected := 'user_name: Alice';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.KeyEncodingQuoted_ShouldMatchExpected;
@@ -588,7 +589,7 @@ begin
   JsonInput := '{"user-name":"Alice"}';
   Expected := '"user-name": Alice';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.KeyEncodingDotted_ShouldMatchExpected;
@@ -600,7 +601,7 @@ begin
   JsonInput := '{"user.name":"Alice"}';
   Expected := 'user.name: Alice';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.KeyEncodingUnderscore_ShouldMatchExpected;
@@ -612,7 +613,7 @@ begin
   JsonInput := '{"_private":"value"}';
   Expected := '_private: value';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.TabularUniformObjects_ShouldMatchExpected;
@@ -628,7 +629,7 @@ data[2]{a,b}:
   3,4
 '''.Trim;
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.TabularFieldOrder_ShouldMatchExpected;
@@ -656,7 +657,7 @@ data[2]{a,b}:
   2,3
 '''.Trim;
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.TabularWithBooleans_ShouldMatchExpected;
@@ -672,7 +673,7 @@ data[2]{active,count}:
   false,2
 '''.Trim;
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.TabularWithNumbers_ShouldMatchExpected;
@@ -688,7 +689,7 @@ data[2]{x,y}:
   3.14,4
 '''.Trim;
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.ListMixedTypes_ShouldMatchExpected;
@@ -739,7 +740,7 @@ begin
   JsonInput := '42';
   Expected := '42';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.RootArray_ShouldMatchExpected;
@@ -751,7 +752,7 @@ begin
   JsonInput := '[1,2,3]';
   Expected := '[3]: 1,2,3';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.RootObject_ShouldMatchExpected;
@@ -763,7 +764,7 @@ begin
   JsonInput := '{"name":"Alice"}';
   Expected := 'name: Alice';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.ComplexNested_ShouldMatchExpected;
@@ -801,7 +802,7 @@ begin
   JsonInput := '{"text":"Hello 世界 🌍"}';
   Expected := 'text: Hello 世界 🌍';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.EmptyStringValue_ShouldMatchExpected;
@@ -813,7 +814,7 @@ begin
   JsonInput := '{"value":""}';
   Expected := 'value: ""';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.EmptyObject_ShouldMatchExpected;
@@ -825,7 +826,7 @@ begin
   JsonInput := '{}';
   Expected := '';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 procedure TConformanceTests.SingleKeyObject_ShouldMatchExpected;
@@ -837,7 +838,7 @@ begin
   JsonInput := '{"name":"Alice"}';
   Expected := 'name: Alice';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.AreEqual(Expected, Actual);
+  Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
 end.

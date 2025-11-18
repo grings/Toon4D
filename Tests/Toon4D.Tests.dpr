@@ -21,7 +21,13 @@ uses
   Toon4D.Tests.Delimiters in 'Toon4D.Tests.Delimiters.pas',
   Toon4D.Tests.EdgeCases in 'Toon4D.Tests.EdgeCases.pas',
   Toon4D.Tests.Integration in 'Toon4D.Tests.Integration.pas',
-  Toon4D.Tests.Conformance in 'Toon4D.Tests.Conformance.pas';
+  Toon4D.Tests.Conformance in 'Toon4D.Tests.Conformance.pas',
+  Toon4D.Tests.KeyEdgeCases in 'Toon4D.Tests.KeyEdgeCases.pas',
+  Toon4D.Tests.RootArrays in 'Toon4D.Tests.RootArrays.pas',
+  Toon4D.Tests.Whitespace in 'Toon4D.Tests.Whitespace.pas',
+  Toon4D.Tests.ObjectEdgeCases in 'Toon4D.Tests.ObjectEdgeCases.pas',
+  Toon4D.Tests.ArrayEdgeCases in 'Toon4D.Tests.ArrayEdgeCases.pas',
+  Toon4D.Tests.OfficialFixtures in 'Toon4D.Tests.OfficialFixtures.pas';
 
 {$IFNDEF TESTINSIGHT}
 var

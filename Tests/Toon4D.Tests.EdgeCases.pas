@@ -117,6 +117,7 @@ implementation
 
 uses
   Toon4D,
+  Toon4D.Consts,
   Toon4D.Types;
 
 procedure TEdgeCasesTests.NilJsonValue_ShouldRaiseException;
@@ -338,7 +339,7 @@ begin
     end;
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Lines := ToonOutput.Split([sLineBreak]);
+    Lines := ToonOutput.Split([ToonLineBreak]);
     Assert.AreEqual(100, Length(Lines));
   finally
     JsonObject.Free;
@@ -534,7 +535,7 @@ begin
     JsonObject.AddPair('bravo', '5');
 
     ToonOutput := TToon.JsonToToon(JsonObject);
-    Lines := ToonOutput.Split([sLineBreak]);
+    Lines := ToonOutput.Split([ToonLineBreak]);
 
     Assert.IsTrue(Lines[0].StartsWith('zebra:'));
     Assert.IsTrue(Lines[1].StartsWith('yankee:'));
