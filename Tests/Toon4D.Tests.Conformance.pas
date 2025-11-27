@@ -50,6 +50,9 @@ type
     procedure ArrayEmpty_ShouldMatchExpected;
 
     [Test]
+    procedure ArrayMixedPrimitives_ShouldMatchExpected;
+
+    [Test]
     procedure ArrayNested_ShouldMatchExpected;
 
     [Test]
@@ -310,6 +313,18 @@ begin
   Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
 end;
 
+procedure TConformanceTests.ArrayMixedPrimitives_ShouldMatchExpected;
+var
+  JsonInput: string;
+  Expected: string;
+  Actual: string;
+begin
+  JsonInput := '{"items":[1,"text",true,null]}';
+  Expected := 'items[4]: 1,text,true,null';
+  Actual := TToon.JsonToToon(JsonInput);
+  Assert.AreEqual(Expected, Actual);
+end;
+
 procedure TConformanceTests.ArrayNested_ShouldMatchExpected;
 var
   JsonInput: string;
@@ -374,8 +389,8 @@ var
   Actual: string;
   Options: TToonOptions;
 begin
-  JsonInput := '{"data":{"metadata":{"version":"1.0"}}}';
-  Expected := 'data.metadata.version: "1.0"';
+  JsonInput := '{"data":{"metadata":{"version":1.0}}}';
+  Expected := 'data.metadata.version: 1';
   Options := [TToonOption.KeyFoldingSafe];
   Actual := TToon.JsonToToon(JsonInput, Options);
   Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Actual);
@@ -697,14 +712,12 @@ var
   JsonInput: string;
   Actual: string;
 begin
-  // According to official TOON spec, primitive arrays (even mixed types) use inline format
-  JsonInput := '{"items":[1,"text",true,null]}';
+  JsonInput := '{"items":[1,{"name":"Alice"},true]}';
   Actual := TToon.JsonToToon(JsonInput);
-  Assert.Contains(Actual, 'items[4]:');
-  Assert.Contains(Actual, '1');
-  Assert.Contains(Actual, 'text');
-  Assert.Contains(Actual, 'true');
-  Assert.Contains(Actual, 'null');
+  Assert.Contains(Actual, 'items[3]:');
+  Assert.Contains(Actual, '- 1');
+  Assert.Contains(Actual, '- name: Alice');
+  Assert.Contains(Actual, '- true');
 end;
 
 procedure TConformanceTests.ListNestedObjects_ShouldMatchExpected;

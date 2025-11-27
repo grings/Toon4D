@@ -23,7 +23,10 @@ type
     procedure RestApiUserList_ShouldEncodeAsTabular;
 
     [Test]
-    procedure RestApiNestedResponse_ShouldEncodeWithKeyFolding;
+    procedure RestApiNestedResponse_ShouldEncodeCorrectly;
+
+    [Test]
+    procedure NestedSingleKeyPath_ShouldFold;
 
     [Test]
     procedure EcommerceOrderList_ShouldEncodeTabularWithMixedTypes;
@@ -139,11 +142,10 @@ begin
   Assert.Contains(ToonOutput, '3,Charlie Brown,user,false');
 end;
 
-procedure TIntegrationTests.RestApiNestedResponse_ShouldEncodeWithKeyFolding;
+procedure TIntegrationTests.RestApiNestedResponse_ShouldEncodeCorrectly;
 var
   JsonString: string;
   ToonOutput: string;
-  Options: TToonOptions;
 begin
   JsonString := '''
   {
@@ -156,6 +158,22 @@ begin
   }
   ''';
 
+  ToonOutput := TToon.JsonToToon(JsonString);
+
+  Assert.Contains(ToonOutput, 'data:');
+  Assert.Contains(ToonOutput, 'metadata:');
+  Assert.Contains(ToonOutput, 'version: "1.0"');
+  Assert.Contains(ToonOutput, 'timestamp:');
+end;
+
+procedure TIntegrationTests.NestedSingleKeyPath_ShouldFold;
+var
+  JsonString: string;
+  ToonOutput: string;
+  Options: TToonOptions;
+begin
+  JsonString := '{"data":{"metadata":{"version":1}}}';
+
   Options := [
     TToonOption.KeyFoldingSafe,
     TToonOption.Indent2Spaces
@@ -164,7 +182,6 @@ begin
   ToonOutput := TToon.JsonToToon(JsonString, Options);
 
   Assert.Contains(ToonOutput, 'data.metadata.version:');
-  Assert.Contains(ToonOutput, 'data.metadata.timestamp:');
 end;
 
 procedure TIntegrationTests.EcommerceOrderList_ShouldEncodeTabularWithMixedTypes;
