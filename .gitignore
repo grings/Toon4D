@@ -56,3 +56,6 @@ __recovery/
 *.mov
 *.wmv
 
+Tests/Win32/Debug/dunitx-results.xml
+Tests/dunitx-results.xml
+.claude/settings.local.json
