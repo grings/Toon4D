@@ -4,16 +4,16 @@
 
 ## Overview
 
-Toon4D is a production-ready Delphi library that encodes JSON data to TOON format - a compact, human-readable serialization format designed specifically for Large Language Model (LLM) applications. TOON achieves **30-60% token reduction** compared to standard JSON while maintaining or improving LLM comprehension.
+Toon4D is a Delphi library that encodes JSON data to TOON format - a compact, human-readable serialization format designed specifically for Large Language Model (LLM) applications. TOON achieves **30-60% token reduction** compared to standard JSON while maintaining or improving LLM comprehension.
 
 ## Key Features
 
-- ✅ **Full TOON 2.0 Specification Compliance** - Complete implementation of all required features
-- 🎯 **Token Efficiency** - 30-60% token reduction on typical LLM payloads
-- 🚀 **Zero Dependencies** - Uses only Delphi RTL (System.JSON)
-- 🌍 **Cross-Platform** - Windows, macOS, Linux, iOS, Android
-- 🧪 **Comprehensive Test Suite** - 150+ unit tests covering all edge cases
-- 📝 **Clean API** - Embarcadero-style static class methods
+- **Full TOON 2.0 Specification Compliance** - Complete implementation of all required features
+- **Token Efficiency** - 30-60% token reduction on typical LLM payloads
+- **Zero Dependencies** - Uses only Delphi RTL (System.JSON)
+- **Cross-Platform** - Windows, macOS, Linux, iOS, Android
+- **Comprehensive Test Suite** - 300+ unit tests covering all edge cases
+- **Clean API** - Embarcadero-style static class methods
 
 ## TOON Format Benefits
 
@@ -94,96 +94,23 @@ var
 
 ## TOON 2.0 Specification Coverage
 
-### ✅ Implemented Features
+### Implemented Features
 
 #### Core Features (MUST)
-- ✅ All JSON primitives: strings, numbers, booleans, null
-- ✅ Number normalization (canonical decimal form)
-- ✅ String escaping (5 escape sequences: \\, \", \n, \r, \t)
-- ✅ Quote minimization rules
-- ✅ Key encoding rules (quoted vs unquoted)
-- ✅ Array format detection (inline, tabular, list)
-- ✅ Indentation-based structure
-- ✅ Delimiter scoping (comma, tab, pipe)
+- All JSON primitives: strings, numbers, booleans, null
+- Number normalization (canonical decimal form)
+- String escaping (5 escape sequences: \\, \", \n, \r, \t)
+- Quote minimization rules
+- Key encoding rules (quoted vs unquoted)
+- Array format detection (inline, tabular, list)
+- Indentation-based structure
+- Delimiter scoping (comma, tab, pipe)
 
 #### Optional Features (SHOULD)
-- ✅ Key folding (safe and aggressive modes)
-- ✅ Custom indent sizes (2-8 spaces)
-- ✅ Multiple delimiter types
-- ✅ Graceful error handling
-
-### 📊 Test Coverage
-
-- **150+ Unit Tests** covering:
-  - ✅ Primitive values encoding (46 tests)
-  - ✅ Array encoding (29 tests)
-  - ✅ Nesting behavior (13 tests)
-  - ✅ Key folding (16 tests)
-  - ✅ Delimiter handling (15 tests)
-  - ✅ Edge cases & error handling (31 tests)
-
-### ❌ Missing Features
-
-Based on the TOON specification and test fixtures (340+ from official repo):
-
-#### Integration Tests
-- ❌ **No integration tests** - Only unit tests present
-- ❌ **No conformance tests** against official TOON spec fixtures
-- ❌ **No real-world scenario tests** (REST API → LLM use cases)
-- ❌ **No token counting benchmarks**
-
-#### Test Coverage Gaps
-According to the spec, the following should be tested but may not be:
-
-1. **Official Conformance Suite** (from github.com/toon-format/spec)
-   - 340+ test fixtures covering encoding and decoding
-   - Systematic edge case coverage
-   - Should be incorporated into `Toon4D.Tests.Conformance.pas`
-
-2. **Unicode and Character Encoding**
-   - Multi-byte characters (CJK, Arabic, Hebrew)
-   - Emoji in keys and values
-   - Combining diacritics
-   - RTL text handling
-   - Zero-width characters
-
-3. **Large Dataset Scenarios**
-   - Arrays with 1000+ elements
-   - Objects with 100+ keys
-   - Deeply nested structures (20+ levels)
-   - Very long strings (10KB+)
-
-4. **Error Recovery**
-   - Malformed JSON handling
-   - Circular reference detection
-   - Memory limit scenarios
-   - Invalid UTF-8 sequences
-
-5. **Configuration Validation**
-   - Conflicting option combinations
-   - Invalid custom indent sizes
-   - Multiple delimiter options set
-
-6. **Real-World Use Cases**
-   - REST API responses → TOON
-   - Database query results → TOON
-   - Token count comparisons (JSON vs TOON)
-   - LLM comprehension validation
-
-## Implementation Status
-
-### ✅ Completed
-- API design (`Toon4D.pas`)
-- Type definitions (`Toon4D.Types.pas`)
-- Comprehensive unit test suite (150+ tests)
-- Test project configuration
-
-### 🚧 In Progress / TODO
-- **Core encoder implementation** - Main encoding logic not yet implemented
-- **Array format analyzer** - Detection logic for tabular vs list format
-- **String utilities** - Quote detection, escaping, validation
-- **Integration tests** - Real-world scenarios
-- **Conformance tests** - Official TOON spec fixtures
+- Key folding (safe and aggressive modes)
+- Custom indent sizes (2-8 spaces)
+- Multiple delimiter types
+- Graceful error handling
 
 ## Project Structure
 
@@ -191,15 +118,26 @@ According to the spec, the following should be tested but may not be:
 Toon4D/
 ├── Source/
 │   ├── Toon4D.pas              // Main API (TToon static class)
-│   └── Toon4D.Types.pas        // Types, enums, options, exceptions
+│   ├── Toon4D.Types.pas        // Types, enums, options, exceptions
+│   ├── Toon4D.Consts.pas       // Constants and resourcestrings
+│   └── Toon4D.Utils.pas        // Utility functions
 ├── Tests/
 │   ├── Toon4D.Tests.dpr        // Test project
-│   ├── Toon4D.Tests.Primitives.pas  // 46 tests
-│   ├── Toon4D.Tests.Arrays.pas      // 29 tests
-│   ├── Toon4D.Tests.Nesting.pas     // 13 tests
-│   ├── Toon4D.Tests.KeyFolding.pas  // 16 tests
-│   ├── Toon4D.Tests.Delimiters.pas  // 15 tests
-│   └── Toon4D.Tests.EdgeCases.pas   // 31 tests
+│   ├── Toon4D.Tests.Primitives.pas
+│   ├── Toon4D.Tests.Arrays.pas
+│   ├── Toon4D.Tests.ArrayEdgeCases.pas
+│   ├── Toon4D.Tests.RootArrays.pas
+│   ├── Toon4D.Tests.Nesting.pas
+│   ├── Toon4D.Tests.KeyFolding.pas
+│   ├── Toon4D.Tests.KeyEdgeCases.pas
+│   ├── Toon4D.Tests.Delimiters.pas
+│   ├── Toon4D.Tests.EdgeCases.pas
+│   ├── Toon4D.Tests.ObjectEdgeCases.pas
+│   ├── Toon4D.Tests.Whitespace.pas
+│   ├── Toon4D.Tests.Integration.pas
+│   ├── Toon4D.Tests.Conformance.pas
+│   ├── Toon4D.Tests.OfficialFixtures.pas
+│   └── Toon4D.Tests.Helpers.pas
 ├── SPEC.md                     // Detailed technical specification
 └── README.md                   // This file
 ```
@@ -353,16 +291,4 @@ MIT License - See LICENSE file for details
 
 ## Contributing
 
-Contributions welcome! Priority areas:
-
-1. Core encoder implementation
-2. Integration test suite
-3. Official conformance test integration
-4. Performance benchmarks
-5. Documentation improvements
-
-## Status
-
-⚠️ **Alpha** - Test suite complete, core implementation in progress
-
-**Current Phase:** Foundation → Core Encoding (see SPEC.md Section 10 for development phases)
+Contributions welcome! Please open an issue or pull request on GitHub.
