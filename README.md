@@ -92,26 +92,6 @@ var
   ToonOutput := TToon.JsonToToon(JsonString, Options);
 ```
 
-## TOON 2.0 Specification Coverage
-
-### Implemented Features
-
-#### Core Features (MUST)
-- All JSON primitives: strings, numbers, booleans, null
-- Number normalization (canonical decimal form)
-- String escaping (5 escape sequences: \\, \", \n, \r, \t)
-- Quote minimization rules
-- Key encoding rules (quoted vs unquoted)
-- Array format detection (inline, tabular, list)
-- Indentation-based structure
-- Delimiter scoping (comma, tab, pipe)
-
-#### Optional Features (SHOULD)
-- Key folding (safe and aggressive modes)
-- Custom indent sizes (2-8 spaces)
-- Multiple delimiter types
-- Graceful error handling
-
 ## Project Structure
 
 ```
