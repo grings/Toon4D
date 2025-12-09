@@ -22,13 +22,13 @@ type
   TToon = class sealed
   private
     class function GetDefaultOptions: TToonOptions; static;
-    class function EncodeObject(JsonObject: TJSONObject; Options: TToonOptions; IndentLevel: Integer = 0): string; static;
+    class function EncodeObject(JsonObject: TJSONObject; Options: TToonOptions; IndentLevel: Integer = 0; RootObject: TJSONObject = nil; const PathPrefix: string = ''): string; static;
     class function EncodePrimitive(JsonValue: TJSONValue; Options: TToonOptions): string; static;
     class function GetIndent(Options: TToonOptions; Level: Integer): string; static;
     class function GetArrayContentLevel(IndentLevel: Integer): Integer; static;
     class function GetNestedLevel(IndentLevel: Integer): Integer; static;
-    class function HasKeyFoldingCollision(ParentObject: TJSONObject; const StartKey: string; NestedObject: TJSONObject): Boolean; static;
-    class function TryFoldKey(ParentObject: TJSONObject; const Key: string; Value: TJSONObject; Options: TToonOptions; IndentLevel: Integer; out FoldedOutput: string): Boolean; static;
+    class function HasKeyFoldingCollision(RootObject: TJSONObject; const PathPrefix: string; const StartKey: string; NestedObject: TJSONObject): Boolean; static;
+    class function TryFoldKey(RootObject: TJSONObject; const PathPrefix: string; const Key: string; Value: TJSONObject; Options: TToonOptions; IndentLevel: Integer; out FoldedOutput: string): Boolean; static;
     class function EncodeArray(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer; IsRootContext: Boolean = False): string; static;
     class function EncodeArrayInline(JsonArray: TJSONArray; Options: TToonOptions; const LengthPrefix: string): string; static;
     class function EncodeArrayTabular(JsonArray: TJSONArray; Options: TToonOptions; IndentLevel: Integer; const LengthPrefix: string): string; static;
@@ -170,9 +170,9 @@ begin
       Exit;
   end;
 
-  for var I := 1 to JsonArray.Count - 1 do
+  for var Index := 1 to JsonArray.Count - 1 do
   begin
-    var Obj := JsonArray.Items[I] as TJSONObject;
+    var Obj := JsonArray.Items[Index] as TJSONObject;
     if Obj.Count <> FieldNames.Count then
       Exit;
 
@@ -195,11 +195,11 @@ begin
   var Builder := TStringBuilder.Create;
   try
     Builder.Append(LengthPrefix).Append(': ');
-    for var I := 0 to JsonArray.Count - 1 do
+    for var Index := 0 to JsonArray.Count - 1 do
     begin
-      if I > 0 then
+      if Index > 0 then
         Builder.Append(Delimiter);
-      var PrimitiveValue := EncodePrimitive(JsonArray.Items[I], Options);
+      var PrimitiveValue := EncodePrimitive(JsonArray.Items[Index], Options);
       Builder.Append(PrimitiveValue);
     end;
     Result := Builder.ToString;
@@ -224,11 +224,11 @@ begin
     var Builder := TStringBuilder.Create;
     try
       Builder.Append(LengthPrefix).Append('{');
-      for var I := 0 to FieldNames.Count - 1 do
+      for var FieldIndex := 0 to FieldNames.Count - 1 do
       begin
-        if I > 0 then
+        if FieldIndex > 0 then
           Builder.Append(Delimiter);
-        var FieldName := FieldNames[I];
+        var FieldName := FieldNames[FieldIndex];
         if not IsValidIdentifier(FieldName) then
           Builder.Append('"').Append(EscapeString(FieldName)).Append('"')
         else
@@ -237,16 +237,16 @@ begin
       Builder.Append('}:');
 
       var Indent := GetIndent(Options, GetArrayContentLevel(IndentLevel));
-      for var I := 0 to JsonArray.Count - 1 do
+      for var RowIndex := 0 to JsonArray.Count - 1 do
       begin
         Builder.Append(ToonLineBreak);
         Builder.Append(Indent);
-        var Obj := JsonArray.Items[I] as TJSONObject;
-        for var J := 0 to FieldNames.Count - 1 do
+        var Obj := JsonArray.Items[RowIndex] as TJSONObject;
+        for var ColIndex := 0 to FieldNames.Count - 1 do
         begin
-          if J > 0 then
+          if ColIndex > 0 then
             Builder.Append(Delimiter);
-          var FieldValue := Obj.GetValue(FieldNames[J]);
+          var FieldValue := Obj.GetValue(FieldNames[ColIndex]);
           var PrimitiveValue := EncodePrimitive(FieldValue, Options);
           Builder.Append(PrimitiveValue);
         end;
@@ -271,31 +271,52 @@ begin
       ContentLevel := 1;
     var Indent := GetIndent(Options, ContentLevel);
 
-    for var I := 0 to JsonArray.Count - 1 do
+    for var ItemIndex := 0 to JsonArray.Count - 1 do
     begin
       Builder.Append(ToonLineBreak);
       Builder.Append(Indent).Append('- ');
-      var Item := JsonArray.Items[I];
+      var Item := JsonArray.Items[ItemIndex];
 
       if Item is TJSONObject then
       begin
         var ObjContent := EncodeObject(Item as TJSONObject, Options, 0);
         var Lines := ObjContent.Split([ToonLineBreak]);
-        for var J := 0 to High(Lines) do
+        var NestedIndent := GetIndent(Options, 1);
+        for var Index := 0 to High(Lines) do
         begin
-          if J = 0 then
-            Builder.Append(Lines[J])
+          if Index = 0 then
+            Builder.Append(Lines[Index])
           else
           begin
             Builder.Append(ToonLineBreak);
-            Builder.Append(Indent).Append('  ').Append(Lines[J]);
+            var Line := Lines[Index];
+            var TrimmedLine := Line.TrimLeft;
+            var LeadingSpaces := Length(Line) - Length(TrimmedLine);
+            var NestedIndentLen := Length(NestedIndent);
+            if Line.StartsWith(NestedIndent) then
+            begin
+              var IsArrayContent := TrimmedLine.StartsWith('- ') or (not TrimmedLine.Contains(': '));
+              if IsArrayContent or (LeadingSpaces > NestedIndentLen) then
+                Line := Line.Substring(NestedIndentLen);
+            end;
+            Builder.Append(Indent).Append('  ').Append(Line);
           end;
         end;
       end
       else if Item is TJSONArray then
       begin
-        var ArrayContent := EncodeArray(Item as TJSONArray, Options, GetNestedLevel(IndentLevel));
-        Builder.Append(ArrayContent);
+        var ArrayContent := EncodeArray(Item as TJSONArray, Options, 0);
+        var Lines := ArrayContent.Split([ToonLineBreak]);
+        for var Index := 0 to High(Lines) do
+        begin
+          if Index = 0 then
+            Builder.Append(Lines[Index])
+          else
+          begin
+            Builder.Append(ToonLineBreak);
+            Builder.Append(Indent).Append('  ').Append(Lines[Index]);
+          end;
+        end;
       end
       else
       begin
@@ -331,9 +352,9 @@ begin
   end;
 
   var AllPrimitives := True;
-  for var I := 0 to ArrayLength - 1 do
+  for var Index := 0 to ArrayLength - 1 do
   begin
-    var Item := JsonArray.Items[I];
+    var Item := JsonArray.Items[Index];
     if (Item is TJSONObject) or (Item is TJSONArray) then
     begin
       AllPrimitives := False;
@@ -348,9 +369,9 @@ begin
   end;
 
   var AllObjects := True;
-  for var I := 0 to ArrayLength - 1 do
+  for var Index := 0 to ArrayLength - 1 do
   begin
-    if not (JsonArray.Items[I] is TJSONObject) then
+    if not (JsonArray.Items[Index] is TJSONObject) then
     begin
       AllObjects := False;
       Break;
@@ -370,33 +391,38 @@ begin
   Result := EncodeArrayList(JsonArray, Options, IndentLevel, LengthPrefix, IsRootContext);
 end;
 
-class function TToon.HasKeyFoldingCollision(ParentObject: TJSONObject; const StartKey: string; NestedObject: TJSONObject): Boolean;
+class function TToon.HasKeyFoldingCollision(RootObject: TJSONObject; const PathPrefix: string; const StartKey: string; NestedObject: TJSONObject): Boolean;
 var
   FoldedPath: string;
+  FullPath: string;
   CurrentObj: TJSONObject;
   Pair: TJSONPair;
 begin
   Result := False;
+  if RootObject = nil then
+    Exit;
+
   FoldedPath := StartKey;
   CurrentObj := NestedObject;
 
-  // Build all possible folded paths and check if they exist as literal keys
   while (CurrentObj <> nil) and (CurrentObj.Count = 1) do
   begin
     FoldedPath := FoldedPath + '.' + CurrentObj.Pairs[0].JsonString.Value;
 
-    // Check if this folded path exists as a literal key in parent
-    // We need to check each pair explicitly, not use TryGetValue which might resolve paths
-    for Pair in ParentObject do
+    if PathPrefix <> '' then
+      FullPath := PathPrefix + '.' + FoldedPath
+    else
+      FullPath := FoldedPath;
+
+    for Pair in RootObject do
     begin
-      if Pair.JsonString.Value = FoldedPath then
+      if Pair.JsonString.Value = FullPath then
       begin
         Result := True;
         Exit;
       end;
     end;
 
-    // Continue to next level if child is an object
     if CurrentObj.Pairs[0].JsonValue is TJSONObject then
       CurrentObj := CurrentObj.Pairs[0].JsonValue as TJSONObject
     else
@@ -404,7 +430,7 @@ begin
   end;
 end;
 
-class function TToon.TryFoldKey(ParentObject: TJSONObject; const Key: string; Value: TJSONObject; Options: TToonOptions; IndentLevel: Integer; out FoldedOutput: string): Boolean;
+class function TToon.TryFoldKey(RootObject: TJSONObject; const PathPrefix: string; const Key: string; Value: TJSONObject; Options: TToonOptions; IndentLevel: Integer; out FoldedOutput: string): Boolean;
 begin
   Result := False;
 
@@ -417,8 +443,7 @@ begin
   if Value.Count <> 1 then
     Exit;
 
-  // Check for key folding collisions
-  if HasKeyFoldingCollision(ParentObject, Key, Value) then
+  if HasKeyFoldingCollision(RootObject, PathPrefix, Key, Value) then
     Exit;
 
   var FoldedKey := Key;
@@ -433,9 +458,6 @@ begin
 
     if not IsValidIdentifier(ChildKey) then
       Exit;
-
-    if (ChildValue is TJSONObject) and ((ChildValue as TJSONObject).Count <> 1) then
-      Break;
 
     FoldedKey := FoldedKey + '.' + ChildKey;
 
@@ -458,20 +480,27 @@ begin
     CurrentObj := ChildValue as TJSONObject;
   end;
 
-  var NestedObj := EncodeObject(CurrentObj, Options, IndentLevel + 1);
-  FoldedOutput := Indent + FoldedKey + ':';
-  if NestedObj <> '' then
-    FoldedOutput := FoldedOutput + ToonLineBreak + NestedObj;
-  Result := True;
+  if CurrentObj.Count = 0 then
+  begin
+    FoldedOutput := Indent + FoldedKey + ':';
+    Result := True;
+    Exit;
+  end;
+
+  Result := False;
 end;
 
-class function TToon.EncodeObject(JsonObject: TJSONObject; Options: TToonOptions; IndentLevel: Integer): string;
+class function TToon.EncodeObject(JsonObject: TJSONObject; Options: TToonOptions; IndentLevel: Integer; RootObject: TJSONObject; const PathPrefix: string): string;
 begin
   if JsonObject.Count = 0 then
   begin
     Result := '';
     Exit;
   end;
+
+  var ActualRoot := RootObject;
+  if ActualRoot = nil then
+    ActualRoot := JsonObject;
 
   var Builder := TStringBuilder.Create;
   try
@@ -482,14 +511,18 @@ begin
       var Value := Pair.JsonValue;
       var Indent := GetIndent(Options, IndentLevel);
 
+      var NewPathPrefix: string;
+      if PathPrefix <> '' then
+        NewPathPrefix := PathPrefix + '.' + Key
+      else
+        NewPathPrefix := Key;
+
       if Value is TJSONObject then
       begin
         var NestedObject := Value as TJSONObject;
-        if NestedObject.Count = 0 then
-          Continue;
 
         var FoldedResult: string;
-        if TryFoldKey(JsonObject, Key, NestedObject, Options, IndentLevel, FoldedResult) then
+        if TryFoldKey(ActualRoot, PathPrefix, Key, NestedObject, Options, IndentLevel, FoldedResult) then
         begin
           if not IsFirst then
             Builder.Append(ToonLineBreak);
@@ -502,16 +535,18 @@ begin
           if not IsValidIdentifier(Key) then
             QuotedKey := '"' + EscapeString(Key) + '"';
 
-          var NestedObj := EncodeObject(NestedObject, Options, IndentLevel + 1);
+          if not IsFirst then
+            Builder.Append(ToonLineBreak);
+          Builder.Append(Indent).Append(QuotedKey).Append(':');
+
+          var NestedObj := EncodeObject(NestedObject, Options, IndentLevel + 1, ActualRoot, NewPathPrefix);
           if NestedObj <> '' then
           begin
-            if not IsFirst then
-              Builder.Append(ToonLineBreak);
-            Builder.Append(Indent).Append(QuotedKey).Append(':');
             Builder.Append(ToonLineBreak);
             Builder.Append(NestedObj);
-            IsFirst := False;
           end;
+
+          IsFirst := False;
         end;
       end
       else if Value is TJSONArray then

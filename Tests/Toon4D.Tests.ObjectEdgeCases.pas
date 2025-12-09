@@ -294,7 +294,6 @@ procedure TObjectEdgeCasesTests.KeyWithControlChar_ShouldQuoteAndEscape;
 var
   JsonObject: TJSONObject;
   Result: string;
-  Expected: string;
 begin
   JsonObject := TJSONObject.Create;
   try

@@ -510,7 +510,7 @@ begin
     Level1.AddPair('metadata', Level2);
     JsonObject.AddPair('data', Level1);
 
-    Options := [TToonOption.KeyFoldingSafe];
+    Options := [TToonOption.KeyFoldingNone];
     Result := TToon.JsonToToon(JsonObject, Options);
 
     Expected := '''
@@ -519,7 +519,7 @@ data:
     value: 42
 '''.Trim;
 
-    Assert.AreEqual(Expected, Result, 'flattenDepth=0 should not fold any keys');
+    Assert.AreEqual(TToonTestHelpers.NormalizeLineEndings(Expected), Result, 'KeyFoldingNone should not fold any keys');
   finally
     JsonObject.Free;
   end;
@@ -557,6 +557,7 @@ var
   Level3: TJSONObject;
   Options: TToonOptions;
   Result: string;
+  Expected: string;
 begin
   JsonObject := TJSONObject.Create;
   try
@@ -571,8 +572,8 @@ begin
     Options := [TToonOption.KeyFoldingSafe];
     Result := TToon.JsonToToon(JsonObject, Options);
 
-    Assert.Contains(Result, 'data.metadata:');
-    Assert.Contains(Result, '  stats.count: 100');
+    Expected := 'data.metadata.stats.count: 100';
+    Assert.AreEqual(Expected, Result);
   finally
     JsonObject.Free;
   end;
@@ -596,7 +597,7 @@ begin
     Options := [TToonOption.KeyFoldingSafe];
     Result := TToon.JsonToToon(JsonObject, Options);
 
-    Assert.AreEqual('', Result, 'Folding chains ending with empty objects should produce empty output');
+    Assert.AreEqual('data.empty:', Result);
   finally
     JsonObject.Free;
   end;

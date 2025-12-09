@@ -112,6 +112,20 @@ begin
     else if KeyFolding = 'aggressive' then
       Options := Options + [TToonOption.KeyFoldingAggressive];
   end;
+
+  var FlattenDepth: Integer;
+  if OptionsObj.TryGetValue<Integer>('flattenDepth', FlattenDepth) then
+  begin
+    if FlattenDepth = 0 then
+      Options := Options + [TToonOption.KeyFoldingNone];
+  end;
+
+  var IndentSize: Integer;
+  if OptionsObj.TryGetValue<Integer>('indent', IndentSize) then
+  begin
+    if IndentSize = 4 then
+      Options := Options + [TToonOption.Indent4Spaces];
+  end;
 end;
 
 function LoadFixtures(const FileName: string): TArray<TFixtureTest>;

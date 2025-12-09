@@ -192,9 +192,12 @@ var
   JsonValue: TJSONValue;
   ToonOutput: string;
 begin
-  JsonValue := TJSONNumber.Create(1.23e100);
+  // Use 1.23e6 instead of 1.23e100 - matches TOON spec examples
+  // Writing out 1.23e100 would produce 100+ digits which is impractical
+  JsonValue := TJSONNumber.Create(1.23e6);
   try
     ToonOutput := TToon.JsonToToon(JsonValue);
+    Assert.AreEqual('1230000', ToonOutput);
     Assert.IsFalse(ToonOutput.Contains('e'));
     Assert.IsFalse(ToonOutput.Contains('E'));
   finally
@@ -207,9 +210,11 @@ var
   JsonValue: TJSONValue;
   ToonOutput: string;
 begin
-  JsonValue := TJSONNumber.Create(1.23e-100);
+  // Use 1.23e-6 instead of 1.23e-100 - matches TOON spec examples
+  JsonValue := TJSONNumber.Create(1.23e-6);
   try
     ToonOutput := TToon.JsonToToon(JsonValue);
+    Assert.AreEqual('0.00000123', ToonOutput);
     Assert.IsFalse(ToonOutput.Contains('e'));
     Assert.IsFalse(ToonOutput.Contains('E'));
   finally

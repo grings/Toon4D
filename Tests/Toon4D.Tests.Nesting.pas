@@ -375,7 +375,7 @@ begin
     EmptyObject := TJSONObject.Create;
     JsonObject.AddPair('empty', EmptyObject);
 
-    Expected := '';
+    Expected := 'empty:';
     ToonOutput := TToon.JsonToToon(JsonObject);
     Assert.AreEqual(Expected, ToonOutput);
   finally
