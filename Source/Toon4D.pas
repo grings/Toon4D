@@ -431,6 +431,9 @@ begin
 end;
 
 class function TToon.TryFoldKey(RootObject: TJSONObject; const PathPrefix: string; const Key: string; Value: TJSONObject; Options: TToonOptions; IndentLevel: Integer; out FoldedOutput: string): Boolean;
+var
+  MaxDepth: Integer;
+  CurrentDepth: Integer;
 begin
   Result := False;
 
@@ -446,9 +449,18 @@ begin
   if HasKeyFoldingCollision(RootObject, PathPrefix, Key, Value) then
     Exit;
 
+  if TToonOption.KeyFoldingDepth1 in Options then
+    Exit;
+
+  if TToonOption.KeyFoldingDepth2 in Options then
+    MaxDepth := 2
+  else
+    MaxDepth := MaxInt;
+
   var FoldedKey := Key;
   var CurrentObj := Value;
   var Indent := GetIndent(Options, IndentLevel);
+  CurrentDepth := 1;
 
   while CurrentObj.Count = 1 do
   begin
@@ -459,7 +471,17 @@ begin
     if not IsValidIdentifier(ChildKey) then
       Exit;
 
+    if CurrentDepth >= MaxDepth then
+    begin
+      var NoFoldOptions := Options - [TToonOption.KeyFoldingSafe, TToonOption.KeyFoldingAggressive, TToonOption.KeyFoldingDepth2];
+      var NestedContent := EncodeObject(CurrentObj, NoFoldOptions, IndentLevel + 1, RootObject, PathPrefix + FoldedKey + '.');
+      FoldedOutput := Indent + FoldedKey + ':' + ToonLineBreak + NestedContent;
+      Result := True;
+      Exit;
+    end;
+
     FoldedKey := FoldedKey + '.' + ChildKey;
+    Inc(CurrentDepth);
 
     if ChildValue is TJSONArray then
     begin

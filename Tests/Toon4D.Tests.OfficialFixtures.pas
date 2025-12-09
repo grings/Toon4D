@@ -104,20 +104,29 @@ begin
       Options := Options + [TToonOption.DelimiterPipe];
   end;
 
-  var KeyFolding: string;
-  if OptionsObj.TryGetValue<string>('keyFolding', KeyFolding) then
-  begin
-    if KeyFolding = 'safe' then
-      Options := Options + [TToonOption.KeyFoldingSafe]
-    else if KeyFolding = 'aggressive' then
-      Options := Options + [TToonOption.KeyFoldingAggressive];
-  end;
-
   var FlattenDepth: Integer;
-  if OptionsObj.TryGetValue<Integer>('flattenDepth', FlattenDepth) then
+  var HasFlattenDepthZero := OptionsObj.TryGetValue<Integer>('flattenDepth', FlattenDepth) and (FlattenDepth = 0);
+
+  if HasFlattenDepthZero then
+    Options := Options + [TToonOption.KeyFoldingNone]
+  else
   begin
-    if FlattenDepth = 0 then
-      Options := Options + [TToonOption.KeyFoldingNone];
+    var KeyFolding: string;
+    if OptionsObj.TryGetValue<string>('keyFolding', KeyFolding) then
+    begin
+      if KeyFolding = 'safe' then
+        Options := Options + [TToonOption.KeyFoldingSafe]
+      else if KeyFolding = 'aggressive' then
+        Options := Options + [TToonOption.KeyFoldingAggressive];
+    end;
+
+    if OptionsObj.TryGetValue<Integer>('flattenDepth', FlattenDepth) then
+    begin
+      if FlattenDepth = 1 then
+        Options := Options + [TToonOption.KeyFoldingDepth1]
+      else if FlattenDepth = 2 then
+        Options := Options + [TToonOption.KeyFoldingDepth2];
+    end;
   end;
 
   var IndentSize: Integer;

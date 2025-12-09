@@ -27,6 +27,8 @@ type
     KeyFoldingNone,
     KeyFoldingSafe,
     KeyFoldingAggressive,
+    KeyFoldingDepth1,
+    KeyFoldingDepth2,
     PreferTabular,
     PreferList,
     ForceInlineForPrimitives,
