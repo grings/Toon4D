@@ -37,8 +37,16 @@ Thumbs.db
 
 # Applications
 *.app
-*.exe
 *.war
+
+# Delphi compiled files
+*.dcu
+*.exe
+*.res
+Win32/
+Win64/
+__history/
+__recovery/
 
 # Large media files
 *.mp4
@@ -48,3 +56,6 @@ Thumbs.db
 *.mov
 *.wmv
 
+Tests/Win32/Debug/dunitx-results.xml
+Tests/dunitx-results.xml
+.claude/settings.local.json
